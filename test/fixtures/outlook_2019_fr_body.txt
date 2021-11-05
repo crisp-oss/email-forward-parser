@@ -1,0 +1,6 @@
+﻿Le 28/10/2021 12:46, « John Doe » <john.doe@acme.com> a écrit :
+
+    Aenean quis diam urna. Maecenas eleifend vulputate ligula ac consequat. Pellentesque cursus tincidunt mauris non venenatis.
+    Sed nec facilisis tellus. Nunc eget eros quis ex congue iaculis nec quis massa. Morbi in nisi tincidunt, euismod ante eget, eleifend nisi.
+
+    Praesent ac ligula orci. Pellentesque convallis suscipit mi, at congue massa sagittis eget.

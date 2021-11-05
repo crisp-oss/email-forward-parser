@@ -1,0 +1,9 @@
+От: John Doe <john.doe@acme.com>
+Дата: четверг, 28 октября 2021 г. в 12:46
+Кому: bessie.berry@acme.com <bessie.berry@acme.com>
+Копия: Walter Sheltan <walter.sheltan@acme.com>, Nicholas <nicholas@globex.corp>
+Тема: Integer consequat non purus
+Aenean quis diam urna. Maecenas eleifend vulputate ligula ac consequat. Pellentesque cursus tincidunt mauris non venenatis.
+Sed nec facilisis tellus. Nunc eget eros quis ex congue iaculis nec quis massa. Morbi in nisi tincidunt, euismod ante eget, eleifend nisi.
+
+Praesent ac ligula orci. Pellentesque convallis suscipit mi, at congue massa sagittis eget.

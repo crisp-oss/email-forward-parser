@@ -1,0 +1,13 @@
+> Anfang der weitergeleiteten Nachricht:
+>
+> Von: John Doe <john.doe@acme.com>
+> Betreff: Integer consequat non purus
+> Datum: 26. Oktober 2021 um 14:25:08 OESZ
+> An: bessie.berry@acme.com
+> Kopie: Walter Sheltan <walter.sheltan@acme.com>, Nicholas <nicholas@globex.corp>
+>
+> Aenean quis diam urna. Maecenas eleifend vulputate ligula ac consequat. Pellentesque cursus tincidunt mauris non venenatis.
+> Sed nec facilisis tellus. Nunc eget eros quis ex congue iaculis nec quis massa. Morbi in nisi tincidunt, euismod ante eget, eleifend nisi.
+>
+> Praesent ac ligula orci. Pellentesque convallis suscipit mi, at congue massa sagittis eget.
+>

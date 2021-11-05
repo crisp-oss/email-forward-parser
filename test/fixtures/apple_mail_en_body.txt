@@ -1,0 +1,13 @@
+> Begin forwarded message:
+>
+> From: John Doe <john.doe@acme.com>
+> Subject: Integer consequat non purus
+> Date: 25 October 2021 at 11:17:21 EEST
+> To: bessie.berry@acme.com
+> Cc: Walter Sheltan <walter.sheltan@acme.com>, Nicholas <nicholas@globex.corp>
+>
+> Aenean quis diam urna. Maecenas eleifend vulputate ligula ac consequat. Pellentesque cursus tincidunt mauris non venenatis.
+> Sed nec facilisis tellus. Nunc eget eros quis ex congue iaculis nec quis massa. Morbi in nisi tincidunt, euismod ante eget, eleifend nisi.
+>
+> Praesent ac ligula orci. Pellentesque convallis suscipit mi, at congue massa sagittis eget.
+>

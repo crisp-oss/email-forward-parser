@@ -1,0 +1,9 @@
+Od: John Doe <john.doe@acme.com>
+Data: czwartek, 28 października 2021 o 12:46
+Do: bessie.berry@acme.com <bessie.berry@acme.com>
+DW: Walter Sheltan <walter.sheltan@acme.com>, Nicholas <nicholas@globex.corp>
+Temat: Integer consequat non purus
+Aenean quis diam urna. Maecenas eleifend vulputate ligula ac consequat. Pellentesque cursus tincidunt mauris non venenatis.
+Sed nec facilisis tellus. Nunc eget eros quis ex congue iaculis nec quis massa. Morbi in nisi tincidunt, euismod ante eget, eleifend nisi.
+
+Praesent ac ligula orci. Pellentesque convallis suscipit mi, at congue massa sagittis eget.

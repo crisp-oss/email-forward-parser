@@ -1,0 +1,11 @@
+---------- Forwarded message ---------
+Van: John Doe <john.doe@acme.com>
+Date: wo 27 okt. 2021 om 09:31
+Subject: Integer consequat non purus
+To: <bessie.berry@acme.com>
+Cc: Walter Sheltan <walter.sheltan@acme.com>, Nicholas <nicholas@globex.corp>
+
+Aenean quis diam urna. Maecenas eleifend vulputate ligula ac consequat. Pellentesque cursus tincidunt mauris non venenatis.
+Sed nec facilisis tellus. Nunc eget eros quis ex congue iaculis nec quis massa. Morbi in nisi tincidunt, euismod ante eget, eleifend nisi.
+
+Praesent ac ligula orci. Pellentesque convallis suscipit mi, at congue massa sagittis eget.

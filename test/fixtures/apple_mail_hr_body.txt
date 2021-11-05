@@ -1,0 +1,13 @@
+> Započni proslijeđenu poruku:
+>
+> Šalje: John Doe <john.doe@acme.com>
+> Predmet: Integer consequat non purus
+> Datum: 26. listopada 2021. u 14:25:08 EEST
+> Prima: bessie.berry@acme.com
+> Cc: Walter Sheltan <walter.sheltan@acme.com>, Nicholas <nicholas@globex.corp>
+>
+> Aenean quis diam urna. Maecenas eleifend vulputate ligula ac consequat. Pellentesque cursus tincidunt mauris non venenatis.
+> Sed nec facilisis tellus. Nunc eget eros quis ex congue iaculis nec quis massa. Morbi in nisi tincidunt, euismod ante eget, eleifend nisi.
+>
+> Praesent ac ligula orci. Pellentesque convallis suscipit mi, at congue massa sagittis eget.
+>

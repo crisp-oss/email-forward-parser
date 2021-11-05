@@ -1,0 +1,13 @@
+-------- Перенаправленное сообщение --------
+Тема: 	Integer consequat non purus
+Дата: 	Wed, 3 Nov 2021 15:51:30 +0100
+От: 	John Doe <john.doe@acme.com>
+Кому: 	bessie.berry@acme.com
+Копия: 	Walter Sheltan <walter.sheltan@acme.com>, Nicholas <nicholas@globex.corp>
+
+
+
+Aenean quis diam urna. Maecenas eleifend vulputate ligula ac consequat. Pellentesque cursus tincidunt mauris non venenatis.
+Sed nec facilisis tellus. Nunc eget eros quis ex congue iaculis nec quis massa. Morbi in nisi tincidunt, euismod ante eget, eleifend nisi.
+
+Praesent ac ligula orci. Pellentesque convallis suscipit mi, at congue massa sagittis eget.
