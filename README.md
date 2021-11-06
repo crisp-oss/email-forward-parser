@@ -73,7 +73,7 @@ Client | Detectable via subject | Detectable via separator | Subject localized |
 Apple Mail | Yes | Yes | Yes | Yes | Yes | Yes | --
 Gmail | Yes | Yes | No | No | Yes | Only some parts | --
 Outlook Live | Yes | Yes | Yes | No | Yes | No | --
-Outlook 2019 | Yes | Yes | No | Yes | No | Yes | The only From and Date parts (only available original information) are embedded in the separator, rather than the body itself
+Outlook 2019 | Yes | Yes | No | Yes | No | Yes | The From and Date parts (only original information available) are embedded in the separator, rather than the body itself
 New Outlook 2019 | Yes | No | Yes | -- | Yes | Yes | --
 Yahoo Mail | Yes | Yes | No | Yes | Yes | Yes | The original information are all stuck to each other, without line breaks
 Thunderbird | Yes | Yes | No | Yes | Yes | Yes | --
