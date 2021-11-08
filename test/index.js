@@ -14,8 +14,8 @@ var EmailForwardParser = require("../lib/index.js");
 const COMMON_SUBJECT = "Integer consequat non purus";
 const COMMON_DATE = "25 October 2021 at 11:17:21 EEST";
 
-const COMMON_FROM_NAME = "John Doe";
 const COMMON_FROM_EMAIL = "john.doe@acme.com";
+const COMMON_FROM_NAME = "John Doe";
 
 const COMMON_TO_EMAIL = "bessie.berry@acme.com";
 
@@ -80,8 +80,8 @@ function testCommonEmail(test, result, skipTo = false, skipCc = false) {
   test.strictEqual(typeof email.date, "string");
   test.strictEqual((email.date || "").length > 1, true);
 
-  test.strictEqual((email.from || {}).name, COMMON_FROM_NAME);
   test.strictEqual((email.from || {}).email, COMMON_FROM_EMAIL);
+  test.strictEqual((email.from || {}).name, COMMON_FROM_NAME);
 
   if (skipTo !== true) {
     test.strictEqual((email.to || {}).email, COMMON_TO_EMAIL);
@@ -130,11 +130,11 @@ module.exports = {
         "gmail_de_body",
         "gmail_en_body",
         "gmail_es_body",
+        "gmail_et_body",
         "gmail_fi_body",
+        "gmail_fr_body",
         "gmail_hr_body",
         "gmail_hu_body",
-        "gmail_et_body",
-        "gmail_fr_body",
         "gmail_it_body",
         "gmail_nl_body",
         "gmail_no_body",
@@ -387,5 +387,21 @@ module.exports = {
 
     test.done();
   },
+
+  // Test: alternative 5 (no name for From)
+  testAlternative5: function(test) {
+    loopTests(
+      [
+        "apple_mail_en_body_alt_5"
+      ],
+
+      (result) => {
+        test.strictEqual((result.email.from || {}).email, COMMON_FROM_EMAIL);
+        test.strictEqual((result.email.from || {}).name, null);
+      }
+    );
+
+    test.done();
+  }
 }
 
