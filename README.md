@@ -30,7 +30,7 @@ This library is used at [Crisp](https://crisp.chat/) everyday with around 1 mill
 ```js
 const EmailForwardParser = require("email-forward-parser");
 
-const result = EmailForwardParser.read(MY_EMAIL_STRING);
+const result = new EmailForwardParser().read(MY_EMAIL_STRING);
 
 console.log(result.forwarded);
 // true
@@ -47,7 +47,7 @@ console.log(result.forwarded);
 ```js
 const EmailForwardParser = require("email-forward-parser");
 
-const result = EmailForwardParser.read(MY_EMAIL_STRING, MY_SUBJECT_STRING);
+const result = new EmailForwardParser().read(MY_EMAIL_STRING, MY_SUBJECT_STRING);
 
 console.log(result.forwarded);
 // true

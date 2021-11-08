@@ -4,8 +4,8 @@
  * IMPORTS
  ***************************************************************************/
 
-var fs          = require("fs");
-var emailparser = require("../lib/index.js");
+var fs                 = require("fs");
+var EmailForwardParser = require("../lib/index.js");
 
 /**************************************************************************
  * CONFIGURATION
@@ -31,6 +31,8 @@ const CC_EMAIL_1 = "walter.sheltan@acme.com";
 const CC_NAME_1 = "Walter Sheltan";
 const CC_EMAIL_2 = "nicholas@globex.corp";
 const CC_NAME_2 = "Nicholas";
+
+const parser = new EmailForwardParser();
 
 /**************************************************************************
  * TESTS
@@ -64,7 +66,7 @@ function parseEmail(emailFile, subjectFile = null) {
     var subject = fs.readFileSync(`${__dirname}/fixtures/${subjectFile}.txt`, "utf-8");
   }
 
-  return emailparser.read(email, subject);
+  return parser.read(email, subject);
 }
 
 function testCommonEmail(test, result, skipTo = false, skipCc = false) {
