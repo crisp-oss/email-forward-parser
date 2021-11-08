@@ -17,6 +17,9 @@
   "devDependencies": {
     "nodeunit-x": "0.15.0"
   },
+  "dependencies": {
+    "re2": "1.16.0"
+  },
   "keywords": [
     "email",
     "forward"
