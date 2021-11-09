@@ -402,6 +402,26 @@ module.exports = {
     );
 
     test.done();
+  },
+
+  // Test: alternative 6 (with Reply-To)
+  testAlternative6: function(test) {
+    loopTests(
+      [
+        "apple_mail_en_body_alt_6"
+      ],
+
+      (result) => {
+        testCommonEmail(
+          test,
+          result,
+
+          false, //- [skipTo]
+          true //- [skipCc]
+        );
+      }
+    );
+
+    test.done();
   }
 }
-
