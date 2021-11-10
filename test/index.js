@@ -14,22 +14,22 @@ var EmailForwardParser = require("../lib/index.js");
 const COMMON_SUBJECT = "Integer consequat non purus";
 const COMMON_DATE = "25 October 2021 at 11:17:21 EEST";
 
-const COMMON_FROM_EMAIL = "john.doe@acme.com";
+const COMMON_FROM_ADDRESS = "john.doe@acme.com";
 const COMMON_FROM_NAME = "John Doe";
 
-const COMMON_TO_EMAIL = "bessie.berry@acme.com";
+const COMMON_TO_ADDRESS = "bessie.berry@acme.com";
 
 const COMMON_BODY = "Aenean quis diam urna. Maecenas eleifend vulputate ligula ac consequat. Pellentesque cursus tincidunt mauris non venenatis.\nSed nec facilisis tellus. Nunc eget eros quis ex congue iaculis nec quis massa. Morbi in nisi tincidunt, euismod ante eget, eleifend nisi.\n\nPraesent ac ligula orci. Pellentesque convallis suscipit mi, at congue massa sagittis eget.";
 
 const COMMON_MESSAGE = "Praesent suscipit egestas hendrerit.\n\nAliquam eget dui dui.";
 
-const TO_EMAIL_1 = "bessie.berry@acme.com";
+const TO_ADDRESS_1 = "bessie.berry@acme.com";
 const TO_NAME_1 = "Bessie Berry";
-const TO_EMAIL_2 = "suzanne@globex.corp";
+const TO_ADDRESS_2 = "suzanne@globex.corp";
 
-const CC_EMAIL_1 = "walter.sheltan@acme.com";
+const CC_ADDRESS_1 = "walter.sheltan@acme.com";
 const CC_NAME_1 = "Walter Sheltan";
-const CC_EMAIL_2 = "nicholas@globex.corp";
+const CC_ADDRESS_2 = "nicholas@globex.corp";
 const CC_NAME_2 = "Nicholas";
 
 const parser = new EmailForwardParser();
@@ -80,18 +80,18 @@ function testCommonEmail(test, result, skipTo = false, skipCc = false) {
   test.strictEqual(typeof email.date, "string");
   test.strictEqual((email.date || "").length > 1, true);
 
-  test.strictEqual((email.from || {}).email, COMMON_FROM_EMAIL);
+  test.strictEqual((email.from || {}).address, COMMON_FROM_ADDRESS);
   test.strictEqual((email.from || {}).name, COMMON_FROM_NAME);
 
   if (skipTo !== true) {
-    test.strictEqual((email.to || {}).email, COMMON_TO_EMAIL);
+    test.strictEqual((email.to || {}).address, COMMON_TO_ADDRESS);
     test.strictEqual((email.to || {}).name, null);
   }
 
   if (skipCc !== true) {
-    test.strictEqual(((email.cc || [])[0] || {}).email, CC_EMAIL_1);
+    test.strictEqual(((email.cc || [])[0] || {}).address, CC_ADDRESS_1);
     test.strictEqual(((email.cc || [])[0] || {}).name, CC_NAME_1);
-    test.strictEqual(((email.cc || [])[1] || {}).email, CC_EMAIL_2);
+    test.strictEqual(((email.cc || [])[1] || {}).address, CC_ADDRESS_2);
     test.strictEqual(((email.cc || [])[1] || {}).name, CC_NAME_2);
   }
 
@@ -285,9 +285,9 @@ module.exports = {
           true //- [skipCc]
         );
 
-        test.strictEqual(((result.email.to || [])[0] || {}).email, TO_EMAIL_1);
-        test.strictEqual((result.email.cc || {}).email, null);
-        test.strictEqual(((result.email.to || [])[1] || {}).email, TO_EMAIL_2);
+        test.strictEqual(((result.email.to || [])[0] || {}).address, TO_ADDRESS_1);
+        test.strictEqual((result.email.cc || {}).address, null);
+        test.strictEqual(((result.email.to || [])[1] || {}).address, TO_ADDRESS_2);
         test.strictEqual((result.email.cc || {}).name, null);
       }
     );
@@ -320,8 +320,8 @@ module.exports = {
 
         // Notice: do not test To, as Outlook 2019 simply doesn't embed them
         if (entryName !== "outlook_2019_en_body_alt_2") {
-          test.strictEqual(((result.email.to || [])[0] || {}).email, TO_EMAIL_1);
-          test.strictEqual(((result.email.to || [])[1] || {}).email, TO_EMAIL_2);
+          test.strictEqual(((result.email.to || [])[0] || {}).address, TO_ADDRESS_1);
+          test.strictEqual(((result.email.to || [])[1] || {}).address, TO_ADDRESS_2);
         }
 
         test.strictEqual(result.message, COMMON_MESSAGE);
@@ -352,14 +352,14 @@ module.exports = {
           true //- [skipCc]
         );
 
-        test.strictEqual(((result.email.to || [])[0] || {}).email, TO_EMAIL_1);
+        test.strictEqual(((result.email.to || [])[0] || {}).address, TO_ADDRESS_1);
         test.strictEqual(((result.email.to || [])[0] || {}).name, TO_NAME_1);
-        test.strictEqual(((result.email.to || [])[1] || {}).email, TO_EMAIL_2);
+        test.strictEqual(((result.email.to || [])[1] || {}).address, TO_ADDRESS_2);
         test.strictEqual(((result.email.to || [])[1] || {}).name, null);
 
-        test.strictEqual(((result.email.cc || [])[0] || {}).email, CC_EMAIL_1);
+        test.strictEqual(((result.email.cc || [])[0] || {}).address, CC_ADDRESS_1);
         test.strictEqual(((result.email.cc || [])[0] || {}).name, null);
-        test.strictEqual(((result.email.cc || [])[1] || {}).email, CC_EMAIL_2);
+        test.strictEqual(((result.email.cc || [])[1] || {}).address, CC_ADDRESS_2);
         test.strictEqual(((result.email.cc || [])[1] || {}).name, CC_NAME_2);
       }
     );
@@ -396,7 +396,7 @@ module.exports = {
       ],
 
       (result) => {
-        test.strictEqual((result.email.from || {}).email, COMMON_FROM_EMAIL);
+        test.strictEqual((result.email.from || {}).address, COMMON_FROM_ADDRESS);
         test.strictEqual((result.email.from || {}).name, null);
       }
     );
