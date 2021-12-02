@@ -84,8 +84,8 @@ function testCommonEmail(test, result, skipTo = false, skipCc = false) {
   test.strictEqual((email.from || {}).name, COMMON_FROM_NAME);
 
   if (skipTo !== true) {
-    test.strictEqual((email.to || {}).address, COMMON_TO_ADDRESS);
-    test.strictEqual((email.to || {}).name, null);
+    test.strictEqual(((email.to || [])[0] || {}).address, COMMON_TO_ADDRESS);
+    test.strictEqual(((email.to || [])[0] || {}).name, null);
   }
 
   if (skipCc !== true) {
@@ -286,9 +286,9 @@ module.exports = {
         );
 
         test.strictEqual(((result.email.to || [])[0] || {}).address, TO_ADDRESS_1);
-        test.strictEqual((result.email.cc || {}).address, null);
         test.strictEqual(((result.email.to || [])[1] || {}).address, TO_ADDRESS_2);
-        test.strictEqual((result.email.cc || {}).name, null);
+        test.strictEqual(((result.email.cc || [])[0] || {}).address, null);
+        test.strictEqual(((result.email.cc || [])[0] || {}).name, null);
       }
     );
 
