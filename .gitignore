@@ -57,3 +57,5 @@ typings/
 # dotenv environment variables file
 .env
 
+# for libraries that are used by other projects, it is recommended to not commit the package-lock.json
+package-lock.json
