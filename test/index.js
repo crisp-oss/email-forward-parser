@@ -287,8 +287,7 @@ module.exports = {
 
         test.strictEqual(((result.email.to || [])[0] || {}).address, TO_ADDRESS_1);
         test.strictEqual(((result.email.to || [])[1] || {}).address, TO_ADDRESS_2);
-        test.strictEqual(((result.email.cc || [])[0] || {}).address, null);
-        test.strictEqual(((result.email.cc || [])[0] || {}).name, null);
+        test.strictEqual((result.email.cc || []).length, 0);
       }
     );
 
