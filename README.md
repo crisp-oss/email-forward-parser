@@ -1,10 +1,12 @@
 # email-forward-parser
 
-[![NPM](https://img.shields.io/npm/v/email-forward-parser.svg)](https://www.npmjs.com/package/email-forward-parser) [![Downloads](https://img.shields.io/npm/dt/email-forward-parser.svg)](https://www.npmjs.com/package/email-forward-parser)
+[![Test and Build](https://github.com/crisp-oss/email-forward-parser/workflows/Test%20and%20Build/badge.svg?branch=master)](https://github.com/crisp-oss/email-forward-parser/actions?query=workflow%3A%22Test+and+Build%22) [![NPM](https://img.shields.io/npm/v/email-forward-parser.svg)](https://www.npmjs.com/package/email-forward-parser) [![Downloads](https://img.shields.io/npm/dt/email-forward-parser.svg)](https://www.npmjs.com/package/email-forward-parser)
 
 Parses forwarded emails and extracts original content.
 
 This library supports most common email clients and locales.
+
+**😘 Maintainer**: [@eliottvincent](https://github.com/eliottvincent)
 
 ## Who uses it?
 
@@ -90,5 +92,4 @@ npm test
 
 ## License
 
-email-forward-parser is released under the MIT License. See the bundled LICENSE
-file for details.
+email-forward-parser is released under the MIT License. See the bundled LICENSE file for details.
