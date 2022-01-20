@@ -166,6 +166,8 @@ module.exports = {
         ["outlook_live_body", "outlook_live_sk_subject"],
         ["outlook_live_body", "outlook_live_sv_subject"],
 
+        ["outlook_2013_en_body", "outlook_2013_en_subject"],
+
         ["new_outlook_2019_cs_body", "new_outlook_2019_cs_subject"],
         ["new_outlook_2019_da_body", "new_outlook_2019_da_subject"],
         ["new_outlook_2019_de_body", "new_outlook_2019_de_subject"],
@@ -264,7 +266,7 @@ module.exports = {
     test.done();
   },
 
-  // Test: alternative 1 (no CC)
+  // Test: alternative 1 (no Cc, multiple To)
   testAlternative1: function(test) {
     loopTests(
       [
@@ -331,7 +333,7 @@ module.exports = {
     test.done();
   },
 
-  // Test: alternative 3 (different forms of To / CC)
+  // Test: alternative 3 (different forms of To / Cc)
   testAlternative3: function(test) {
     loopTests(
       [
