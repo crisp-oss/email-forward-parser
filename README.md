@@ -51,17 +51,32 @@ const EmailForwardParser = require("email-forward-parser");
 
 const result = new EmailForwardParser().read(MY_EMAIL_STRING, MY_SUBJECT_STRING);
 
-console.log(result.forwarded);
-// true
-
-console.log(result.email.from);
-// { email: "john.doe@acme.com", name: "John Doe" }
-
-console.log(result.email.body);
-// "Aenean quis diam urna..."
-
-console.log(result.message);
-// "Praesent suscipit egestas hendrerit..."
+console.log(result);
+// {
+//   forwarded: true,
+//
+//   message: "Praesent suscipit egestas hendrerit.",
+//
+//   email: {
+//     body: "Aenean quis diam urna.",
+//
+//     from: {
+//       address: "john.doe@acme.com",
+//       name: "John Doe"
+//     },
+//     to: [{
+//       address: "bessie.berry@acme.com",
+//       name: "Bessie Berry"
+//     }],
+//     cc: [{
+//       address: "walter.sheltan@acme.com",
+//       name: "Walter Sheltan"
+//     }],
+//
+//     subject: "Integer consequat non purus",
+//     date: "25 October 2021 at 11:17:21 EEST"
+//   }
+// }
 ```
 
 ## How does it work?
