@@ -26,6 +26,7 @@ const COMMON_MESSAGE = "Praesent suscipit egestas hendrerit.\n\nAliquam eget dui
 const TO_ADDRESS_1 = "bessie.berry@acme.com";
 const TO_NAME_1 = "Bessie Berry";
 const TO_ADDRESS_2 = "suzanne@globex.corp";
+const TO_NAME_2 = "Suzanne";
 
 const CC_ADDRESS_1 = "walter.sheltan@acme.com";
 const CC_NAME_1 = "Walter Sheltan";
@@ -421,6 +422,37 @@ module.exports = {
           false, //- [skipTo]
           true //- [skipCc]
         );
+      }
+    );
+
+    test.done();
+  },
+
+  // Test: alternative 7 (with quotes-wrapped names for To)
+  testAlternative7: function(test) {
+    loopTests(
+      [
+        "apple_mail_en_body_alt_7"
+      ],
+
+      (result) => {
+        testCommonEmail(
+          test,
+          result,
+
+          true, //- [skipTo]
+          true //- [skipCc]
+        );
+
+        test.strictEqual(((result.email.to || [])[0] || {}).address, TO_ADDRESS_1);
+        test.strictEqual(((result.email.to || [])[0] || {}).name, TO_NAME_1);
+        test.strictEqual(((result.email.to || [])[1] || {}).address, TO_ADDRESS_2);
+        test.strictEqual(((result.email.to || [])[1] || {}).name, TO_NAME_2);
+
+        test.strictEqual(((result.email.cc || [])[0] || {}).address, CC_ADDRESS_1);
+        test.strictEqual(((result.email.cc || [])[0] || {}).name, null);
+        test.strictEqual(((result.email.cc || [])[1] || {}).address, CC_ADDRESS_2);
+        test.strictEqual(((result.email.cc || [])[1] || {}).name, null);
       }
     );
 
