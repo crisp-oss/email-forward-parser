@@ -3,7 +3,7 @@
 > From: "John Doe" <john.doe@acme.com>
 > Subject: Integer consequat non purus
 > Date: 16 July 2021 at 19:24:14 CEST
-> To: 'Bessie Berry' <bessie.berry@acme.com>, "Suzanne" <suzanne@globex.corp>
+> To: 'Bessie, Berry' <bessie.berry@acme.com>, "Suzanne" <suzanne@globex.corp>
 > Cc: 'walter.sheltan@acme.com' <walter.sheltan@acme.com>, "'nicholas@globex.corp'" <nicholas@globex.corp>
 >
 > Aenean quis diam urna. Maecenas eleifend vulputate ligula ac consequat. Pellentesque cursus tincidunt mauris non venenatis.

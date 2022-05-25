@@ -445,7 +445,7 @@ module.exports = {
         );
 
         test.strictEqual(((result.email.to || [])[0] || {}).address, TO_ADDRESS_1);
-        test.strictEqual(((result.email.to || [])[0] || {}).name, TO_NAME_1);
+        test.strictEqual(((result.email.to || [])[0] || {}).name, "Bessie, Berry");
         test.strictEqual(((result.email.to || [])[1] || {}).address, TO_ADDRESS_2);
         test.strictEqual(((result.email.to || [])[1] || {}).name, TO_NAME_2);
 
