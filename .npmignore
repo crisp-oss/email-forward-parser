@@ -1,2 +1,4 @@
-test/
-.github/
+*
+!/lib/index.js
+!/lib/parser.js
+!/lib/utils.js
