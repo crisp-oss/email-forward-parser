@@ -24,7 +24,7 @@ _👋 You use this library and you want to be listed there? [Contact us](https:/
 ## Features
 
 This library is used at [Crisp](https://crisp.chat/) everyday with around 1 million inbound emails.
-* Supported clients: Apple Mail, Gmail, Outlook Live, Outlook 2013, Outlook 2019, New Outlook 2019, Yahoo Mail, Thunderbird, Missive
+* Supported clients: Apple Mail, Gmail, Outlook Live / 365, Outlook 2013, Outlook 2019, New Outlook 2019, Yahoo Mail, Thunderbird, Missive
 * Supported locales: Croatian, Czech, Danish, Dutch, English, French, Finnish, German, Hungarian, Italian, Norwegian, Polish, Portuguese (Brazil), Portuguese (Portugal), Romanian, Russian, Slovak, Spanish, Swedish, Turkish, Ukrainian
 
 ## Usage
@@ -89,7 +89,7 @@ Client | Detectable via subject | Detectable via separator | Subject localized |
 --- | --- | --- | --- | --- | --- | --- | ---
 Apple Mail | Yes | Yes | Yes | Yes | Yes | Yes | --
 Gmail | Yes | Yes | No | No | Yes | Only some parts | --
-Outlook Live | Yes | Yes | Yes | No | Yes | No | --
+Outlook Live / 365 | Yes | Yes | Yes | No | Yes | No | --
 Outlook 2013 | Yes | No | ? | -- | ? | ? | --
 Outlook 2019 | Yes | Yes | No | Yes | No | Yes | The From and Date parts (only original information available) are embedded in the separator, rather than the body itself
 New Outlook 2019 | Yes | No | Yes | -- | Yes | Yes | --
