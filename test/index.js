@@ -100,7 +100,7 @@ function testCommonEmail(test, result, skipTo = false, skipCc = false) {
 }
 
 module.exports = {
-  // Test: common (no message, multiple to / cc)
+  // Test: common (no message, To, multiple Cc)
   testCommon: function(test) {
     loopTests(
       [
@@ -148,6 +148,8 @@ module.exports = {
         "gmail_sv_body",
         "gmail_tr_body",
         "gmail_uk_body",
+
+        "missive_en_body",
 
         ["outlook_live_body", "outlook_live_cs_subject"],
         ["outlook_live_body", "outlook_live_da_subject"],
@@ -273,6 +275,7 @@ module.exports = {
       [
         "apple_mail_en_body_alt_1",
         "gmail_en_body_alt_1",
+        "missive_en_body_alt_1",
         ["outlook_live_en_body_alt_1", "outlook_live_en_subject"],
         ["new_outlook_2019_en_body_alt_1", "new_outlook_2019_en_subject"],
         "yahoo_en_body_alt_1",
@@ -304,6 +307,7 @@ module.exports = {
       [
         "apple_mail_en_body_alt_2",
         "gmail_en_body_alt_2",
+        "missive_en_body_alt_2",
         ["outlook_live_en_body_alt_2", "outlook_live_en_subject"],
         ["new_outlook_2019_en_body_alt_2", "new_outlook_2019_en_subject"],
         ["outlook_2019_en_body_alt_2", "outlook_2019_subject"],
@@ -334,12 +338,13 @@ module.exports = {
     test.done();
   },
 
-  // Test: alternative 3 (different forms of To / Cc)
+  // Test: alternative 3 (different forms of From / To / Cc)
   testAlternative3: function(test) {
     loopTests(
       [
         "apple_mail_en_body_alt_3",
         "gmail_en_body_alt_3",
+        "missive_en_body_alt_3",
         ["outlook_live_en_body_alt_3", "outlook_live_en_subject"],
         ["new_outlook_2019_en_body_alt_3", "new_outlook_2019_en_subject"],
         "yahoo_en_body_alt_3",
@@ -376,6 +381,7 @@ module.exports = {
       [
         "apple_mail_en_body_alt_4",
         "gmail_en_body_alt_4",
+        "missive_en_body_alt_4",
         ["outlook_live_en_body_alt_4", "outlook_live_en_subject_alt_4"],
         ["new_outlook_2019_en_body_alt_4", "new_outlook_2019_en_subject_alt_4"],
         ["outlook_2019_en_body_alt_4", "outlook_2019_en_subject_alt_4"],
