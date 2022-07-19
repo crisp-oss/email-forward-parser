@@ -463,5 +463,25 @@ module.exports = {
     );
 
     test.done();
+  },
+
+  // Test: alternative 8 (misleading signature)
+  testAlternative8: function(test) {
+    loopTests(
+      [
+        "outlook_live_en_body_alt_8"
+      ],
+
+      (result) => {
+        testCommonEmail(
+          test,
+          result
+        );
+
+        // TODO: test other things?
+      }
+    );
+
+    test.done();
   }
 }
