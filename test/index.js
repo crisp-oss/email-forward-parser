@@ -477,8 +477,24 @@ module.exports = {
           test,
           result
         );
+      }
+    );
 
-        // TODO: test other things?
+    test.done();
+  },
+
+  // Test: alternative 9 (multiple From)
+  testAlternative9: function(test) {
+    loopTests(
+      [
+        "outlook_live_en_body_alt_9"
+      ],
+
+      (result) => {
+        testCommonEmail(
+          test,
+          result
+        );
       }
     );
 
