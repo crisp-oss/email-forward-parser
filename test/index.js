@@ -70,7 +70,9 @@ function parseEmail(emailFile, subjectFile = null) {
   return parser.read(email, subject);
 }
 
-function testCommonEmail(test, result, skipTo = false, skipCc = false) {
+function testCommonEmail(
+  test, result, skipTo = false, skipCc = false, skipMessage = false
+) {
   var email = result.email || {};
 
   test.strictEqual(result.forwarded, true);
@@ -97,6 +99,10 @@ function testCommonEmail(test, result, skipTo = false, skipCc = false) {
   }
 
   test.strictEqual(email.body, COMMON_BODY);
+
+  if (skipMessage !== true) {
+    test.strictEqual(result.message, COMMON_MESSAGE);
+  }
 }
 
 module.exports = {
@@ -259,7 +265,8 @@ module.exports = {
           result,
 
           entryName.startsWith("outlook_2019_") ? true : false, //- [skipTo]
-          entryName.startsWith("outlook_2019_") ? true : false //- [skipCc]
+          entryName.startsWith("outlook_2019_") ? true : false, //- [skipCc]
+          true //- [skipMessage]
         );
 
         test.strictEqual(result.message, null);
@@ -288,7 +295,8 @@ module.exports = {
           result,
 
           true, //- [skipTo]
-          true //- [skipCc]
+          true, //- [skipCc]
+          true //- [skipMessage]
         );
 
         test.strictEqual(((result.email.to || [])[0] || {}).address, TO_ADDRESS_1);
@@ -330,8 +338,6 @@ module.exports = {
           test.strictEqual(((result.email.to || [])[0] || {}).address, TO_ADDRESS_1);
           test.strictEqual(((result.email.to || [])[1] || {}).address, TO_ADDRESS_2);
         }
-
-        test.strictEqual(result.message, COMMON_MESSAGE);
       }
     );
 
@@ -357,7 +363,8 @@ module.exports = {
           result,
 
           true, //- [skipTo]
-          true //- [skipCc]
+          true, //- [skipCc]
+          true //- [skipMessage]
         );
 
         test.strictEqual(((result.email.to || [])[0] || {}).address, TO_ADDRESS_1);
@@ -426,7 +433,8 @@ module.exports = {
           result,
 
           false, //- [skipTo]
-          true //- [skipCc]
+          true, //- [skipCc]
+          true //- [skipMessage]
         );
       }
     );
@@ -447,7 +455,8 @@ module.exports = {
           result,
 
           true, //- [skipTo]
-          true //- [skipCc]
+          true, //- [skipCc]
+          true //- [skipMessage]
         );
 
         test.strictEqual(((result.email.to || [])[0] || {}).address, TO_ADDRESS_1);
@@ -488,6 +497,24 @@ module.exports = {
     loopTests(
       [
         "outlook_live_en_body_alt_9"
+      ],
+
+      (result) => {
+        testCommonEmail(
+          test,
+          result
+        );
+      }
+    );
+
+    test.done();
+  },
+
+  // Test: alternative 10 (no separator and different forms of labels)
+  testAlternative10: function(test) {
+    loopTests(
+      [
+        ["outlook_live_en_body_alt_10", "outlook_live_en_subject_alt_10"]
       ],
 
       (result) => {
