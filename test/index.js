@@ -526,5 +526,31 @@ module.exports = {
     );
 
     test.done();
+  },
+
+  // Test: alternative 11 (coma in From)
+  testAlternative11: function(test) {
+    loopTests(
+      [
+        "outlook_live_en_body_alt_11"
+      ],
+
+      (result) => {
+        test.strictEqual((result.email.from || {}).address, COMMON_FROM_ADDRESS);
+        test.strictEqual((result.email.from || {}).name, "John, Doe");
+
+        test.strictEqual(((result.email.to || [])[0] || {}).address, TO_ADDRESS_1);
+        test.strictEqual(((result.email.to || [])[0] || {}).name, "Bessie, Berry");
+        test.strictEqual(((result.email.to || [])[1] || {}).address, TO_ADDRESS_2);
+        test.strictEqual(((result.email.to || [])[1] || {}).name, null);
+
+        test.strictEqual(((result.email.cc || [])[0] || {}).address, CC_ADDRESS_1);
+        test.strictEqual(((result.email.cc || [])[0] || {}).name, "Walter, Sheltan");
+        test.strictEqual(((result.email.cc || [])[1] || {}).address, CC_ADDRESS_2);
+        test.strictEqual(((result.email.cc || [])[1] || {}).name, "Nicholas, Landers");
+      }
+    );
+
+    test.done();
   }
 }
