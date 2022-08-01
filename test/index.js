@@ -577,5 +577,34 @@ module.exports = {
     );
 
     test.done();
+  },
+
+  // Test: alternative 12 (no email for From and To)
+  testAlternative12: function(test) {
+    loopTests(
+      [
+        ["unknown_en_body_alt_12", "unknown_en_subject"]
+      ],
+
+      (result) => {
+        testEmail(
+          test,
+          result,
+
+          true, //- [skipFrom]
+          true, //- [skipTo]
+          true, //- [skipCc]
+          true //- [skipMessage]
+        );
+
+        test.strictEqual((result.email.from || {}).address, null);
+        test.strictEqual((result.email.from || {}).name, FROM_NAME);
+
+        test.strictEqual(((result.email.to || [])[0] || {}).address, null);
+        test.strictEqual(((result.email.to || [])[0] || {}).name, TO_NAME_1);
+      }
+    );
+
+    test.done();
   }
 }
