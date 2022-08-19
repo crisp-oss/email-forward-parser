@@ -67,14 +67,18 @@ function parseEmail(emailFile, subjectFile = null) {
 
 function testEmail(
   test, result,
-  skipFrom = false, skipTo = false, skipCc = false, skipMessage = false
+  skipFrom = false, skipTo = false, skipCc = false, skipMessage = false,
+  skipBody = false
 ) {
   var email = result.email || {};
 
   test.strictEqual(result.forwarded, true);
 
   test.strictEqual(email.subject, SUBJECT);
-  test.strictEqual(email.body, BODY);
+
+  if (skipBody !== true) {
+    test.strictEqual(email.body, BODY);
+  }
 
   // Don't verify the value, as dates are localized by the email client
   test.strictEqual(typeof email.date, "string");
@@ -602,6 +606,32 @@ module.exports = {
 
         test.strictEqual(((result.email.to || [])[0] || {}).address, null);
         test.strictEqual(((result.email.to || [])[0] || {}).name, TO_NAME_1);
+      }
+    );
+
+    test.done();
+  },
+
+  // Test: alternative 13 (nested emails)
+  testAlternative13: function(test) {
+    loopTests(
+      [
+        "apple_mail_en_body_alt_13"
+      ],
+
+      (result) => {
+        testEmail(
+          test,
+          result,
+
+          false, //- [skipFrom]
+          false, //- [skipTo]
+          false, //- [skipCc]
+          false, //- [skipMessage]
+          true, //- [skipBody]
+        );
+
+        test.equal(result.email.body.startsWith(BODY), true);
       }
     );
 
