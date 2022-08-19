@@ -16,7 +16,7 @@ Début du message transféré :
 >
 > Praesent ac ligula orci. Pellentesque convallis suscipit mi, at congue massa sagittis eget.
 >
-> From: Bessie Berry <john.doe@acme.com>
+> From: Bessie Berry <bessie.berry@acme.com>
 > Sent: Monday, 1 August 2022 11:11 pm
 > To: John Doe <john.doe@acme.com>
 > Cc: Walter Sheltan <walter.sheltan@acme.com>; Nicholas <nicholas@globex.corp>
