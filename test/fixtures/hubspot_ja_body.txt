@@ -1,0 +1,11 @@
+---------- メッセージを転送 ---------
+送信元：John Doe <john.doe@acme.com>
+日付：2022年9月19日月曜日 17:55:44 -0400
+件名：Integer consequat non purus
+送信先：bessie.berry@acme.com
+CC：Walter Sheltan <walter.sheltan@acme.com>, Nicholas <nicholas@globex.corp>
+
+Aenean quis diam urna. Maecenas eleifend vulputate ligula ac consequat. Pellentesque cursus tincidunt mauris non venenatis.
+Sed nec facilisis tellus. Nunc eget eros quis ex congue iaculis nec quis massa. Morbi in nisi tincidunt, euismod ante eget, eleifend nisi.
+
+Praesent ac ligula orci. Pellentesque convallis suscipit mi, at congue massa sagittis eget.

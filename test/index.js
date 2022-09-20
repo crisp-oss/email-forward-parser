@@ -156,6 +156,18 @@ module.exports = {
         "gmail_tr_body",
         "gmail_uk_body",
 
+        "hubspot_de_body",
+        "hubspot_en_body",
+        "hubspot_es_body",
+        "hubspot_fi_body",
+        "hubspot_fr_body",
+        "hubspot_it_body",
+        "hubspot_ja_body",
+        "hubspot_nl_body",
+        "hubspot_pl_body",
+        "hubspot_pt_br_body",
+        "hubspot_sv_body",
+
         "missive_en_body",
 
         ["outlook_live_body", "outlook_live_cs_subject"],
@@ -284,6 +296,7 @@ module.exports = {
       [
         "apple_mail_en_body_alt_1",
         "gmail_en_body_alt_1",
+        "hubspot_en_body_alt_1",
         "missive_en_body_alt_1",
         ["outlook_live_en_body_alt_1", "outlook_live_en_subject"],
         ["new_outlook_2019_en_body_alt_1", "new_outlook_2019_en_subject"],
@@ -320,6 +333,7 @@ module.exports = {
       [
         "apple_mail_en_body_alt_2",
         "gmail_en_body_alt_2",
+        "hubspot_en_body_alt_2",
         "missive_en_body_alt_2",
         ["outlook_live_en_body_alt_2", "outlook_live_en_subject"],
         ["new_outlook_2019_en_body_alt_2", "new_outlook_2019_en_subject"],
@@ -395,6 +409,7 @@ module.exports = {
       [
         "apple_mail_en_body_alt_4",
         "gmail_en_body_alt_4",
+        "hubspot_en_body_alt_4",
         "missive_en_body_alt_4",
         ["outlook_live_en_body_alt_4", "outlook_live_en_subject_alt_4"],
         ["new_outlook_2019_en_body_alt_4", "new_outlook_2019_en_subject_alt_4"],

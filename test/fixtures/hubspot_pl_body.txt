@@ -1,0 +1,11 @@
+---------- Wiadomość przesłana dalej ---------
+Od: John Doe <john.doe@acme.com>
+Data: poniedziałek, 19 września 2022, 17:55:44 -0400
+Temat: Integer consequat non purus
+Do: bessie.berry@acme.com
+DW: Walter Sheltan <walter.sheltan@acme.com>, Nicholas <nicholas@globex.corp>
+
+Aenean quis diam urna. Maecenas eleifend vulputate ligula ac consequat. Pellentesque cursus tincidunt mauris non venenatis.
+Sed nec facilisis tellus. Nunc eget eros quis ex congue iaculis nec quis massa. Morbi in nisi tincidunt, euismod ante eget, eleifend nisi.
+
+Praesent ac ligula orci. Pellentesque convallis suscipit mi, at congue massa sagittis eget.

@@ -1,6 +1,6 @@
 {
   "name": "email-forward-parser",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Parses forwarded emails and extract content",
   "author": "Eliott Vincent <eliott@crisp.chat>",
   "main": "lib/index.js",
