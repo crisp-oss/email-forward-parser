@@ -22,6 +22,8 @@
     "re2": "1.16.0"
   },
   "keywords": [
+    "parser",
+    "mail",
     "email",
     "forward"
   ],
