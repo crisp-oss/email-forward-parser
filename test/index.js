@@ -168,6 +168,8 @@ module.exports = {
         "hubspot_pt_br_body",
         "hubspot_sv_body",
 
+        "ionos_one_and_one_en_body",
+
         "missive_en_body",
 
         ["outlook_live_body", "outlook_live_cs_subject"],
@@ -277,10 +279,24 @@ module.exports = {
           test,
           result,
 
-          false, //- [skipFrom]
-          entryName.startsWith("outlook_2019_") ? true : false, //- [skipTo]
-          entryName.startsWith("outlook_2019_") ? true : false, //- [skipCc]
-          true //- [skipMessage]
+          //- [skipFrom]
+          false,
+
+          //- [skipTo]
+          entryName.startsWith("outlook_2019_") ? true : false,
+
+          //- [skipCc]
+          (
+            (
+              entryName.startsWith("outlook_2019_") ||
+                entryName.startsWith("ionos_one_and_one_")
+            )
+              ? true
+              : false
+          ),
+
+          //- [skipMessage]
+          true
         );
 
         test.strictEqual(result.message, null);
@@ -334,6 +350,7 @@ module.exports = {
         "apple_mail_en_body_alt_2",
         "gmail_en_body_alt_2",
         "hubspot_en_body_alt_2",
+        "ionos_one_and_one_en_body_alt_2",
         "missive_en_body_alt_2",
         ["outlook_live_en_body_alt_2", "outlook_live_en_subject"],
         ["new_outlook_2019_en_body_alt_2", "new_outlook_2019_en_subject"],
@@ -348,9 +365,21 @@ module.exports = {
           test,
           result,
 
-          false, //- [skipFrom]
-          true, //- [skipTo]
-          entryName === "outlook_2019_en_body_alt_2" ? true : false //- [skipCc]
+          //- [skipFrom]
+          false,
+
+          //- [skipTo]
+          true,
+
+          //- [skipCc]
+          (
+            (
+              entryName === "outlook_2019_en_body_alt_2" ||
+                entryName === "ionos_one_and_one_en_body_alt_2"
+            )
+              ? true
+              : false
+          )
         );
 
         // Notice: do not test To, as Outlook 2019 simply doesn't embed them
