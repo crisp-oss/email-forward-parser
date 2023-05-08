@@ -20,6 +20,6 @@ Début du message transféré :
 > Sent: Monday, 1 August 2022 11:11 pm
 > To: John Doe <john.doe@acme.com>
 > Cc: Walter Sheltan <walter.sheltan@acme.com>; Nicholas <nicholas@globex.corp>
-> Subject: Integer consequat non purus
+> Subject: Re: Integer consequat non purus
 >
 > Unicum iter ad supremum.

@@ -1,0 +1,49 @@
+Praesent suscipit egestas hendrerit.
+
+Aliquam eget dui dui.
+
+De : John Doe <john.doe@acme.com>
+Envoyé : jeudi 6 avril 2023 16:17
+À : <bessie.berry@acme.com>
+Cc : Walter Sheltan <walter.sheltan@acme.com>; Nicholas <nicholas@globex.corp>
+Objet : Integer consequat non purus
+
+Aenean quis diam urna. Maecenas eleifend vulputate ligula ac consequat. Pellentesque cursus tincidunt mauris non venenatis.
+Sed nec facilisis tellus. Nunc eget eros quis ex congue iaculis nec quis massa. Morbi in nisi tincidunt, euismod ante eget, eleifend nisi.
+
+Praesent ac ligula orci. Pellentesque convallis suscipit mi, at congue massa sagittis eget.
+
+De : Bessie Berry <bessie.berry@acme.com<mailto:bessie.berry@acme.com>>
+Envoyé : mardi 21 février 2023 17:17
+À : John Doe <john.doe@acme.com<mailto:john.doe@acme.com>>
+Cc : Walter Sheltan <walter.sheltan@acme.com<mailto:walter.sheltan@acme.com>>; Nicholas <nicholas@globex.corp<mailto:nicholas@globex.corp>>; John Doe <john.doe@acme.com<mailto:john.doe@acme.com>>
+Objet : ***URGENT*** Integer consequat non purus
+Importance : Haute
+
+Unicum iter ad supremum.
+
+De : Walter Sheltan <walter.sheltan@acme.com<mailto:walter.sheltan@acme.com>>
+Envoyé : mardi 21 février 2023 16:49
+À : Bessie Berry <bessie.berry@acme.com<mailto:bessie.berry@acme.com>>
+Cc : Nicholas <nicholas@globex.corp<mailto:nicholas@globex.corp>>; John Doe <mailto:john.doe@acme.com<john.doe@acme.com>>
+Objet : TR: ***URGENT*** Integer consequat non purus
+Importance : Haute
+
+Bonjour,
+
+
+----------Message transféré ----------
+
+De : Suzanne <suzanne@globex.corp<mailto:suzanne@globex.corp>>
+Date : mardi 7 février 2023 18:04
+À : Walter Sheltan <walter.sheltan@acme.com<mailto:walter.sheltan@acme.com>>
+Cc : Bessie Berry <bessie.berry@acme.com<mailto:bessie.berry@acme.com>>; John Doe <mailto:john.doe@acme.com<john.doe@acme.com>>
+Objet : ***URGENT*** Integer consequat non purus
+
+
+
+Sed nec facilisis tellus. Nunc eget eros quis ex congue iaculis nec quis massa. Morbi in nisi tincidunt, euismod ante eget, eleifend nisi.
+_______________________________
+This email (including any attachments) is intended for the designated
+recipient(s) only, and may be confidential, non-public, proprietary,
+and/or protected by the attorney-client or other privilege. Unauthorized

@@ -537,7 +537,7 @@ module.exports = {
     test.done();
   },
 
-  // Test: alternative 8 (misleading signature)
+  // Test: alternative 8 (signature containing a separator)
   testAlternative8: function(test) {
     loopTests(
       [
@@ -660,7 +660,33 @@ module.exports = {
   testAlternative13: function(test) {
     loopTests(
       [
-        "apple_mail_en_body_alt_13"
+        "apple_mail_fr_body_alt_13"
+      ],
+
+      (result) => {
+        testEmail(
+          test,
+          result,
+
+          false, //- [skipFrom]
+          false, //- [skipTo]
+          false, //- [skipCc]
+          false, //- [skipMessage]
+          true, //- [skipBody]
+        );
+
+        test.equal(result.email.body.startsWith(BODY), true);
+      }
+    );
+
+    test.done();
+  },
+
+  // Test: alternative 14 (multiple nested emails)
+  testAlternative14: function(test) {
+    loopTests(
+      [
+        ["new_outlook_2019_fr_body_alt_14", "new_outlook_2019_fr_subject"]
       ],
 
       (result) => {
