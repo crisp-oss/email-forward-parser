@@ -547,8 +547,23 @@ module.exports = {
       (result) => {
         testEmail(
           test,
-          result
+          result,
+
+          false, //-[skipFrom]
+          false, //-[skipTo]
+          false, //-[skipCc]
+          false, //-[skipMessage]
+          true, //-[skipBody]
         );
+
+        // Perform a quick extraction of the body from the file, so that we \
+        //   can compare it
+        var email = fs.readFileSync(`${__dirname}/fixtures/outlook_live_en_body_alt_8.txt`, "utf-8");
+        var separator = "Subject: Integer consequat non purus\n";
+
+        var body = email.split(separator)[1].trim();
+
+        test.strictEqual(result.email.body, body);
       }
     );
 

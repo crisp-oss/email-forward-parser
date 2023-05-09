@@ -80,28 +80,6 @@ Date: Tuesday, 21 February 2023 at 16:49
 To: Office <office@acme.com<mailto:office@acme.com>>
 Cc: Margaux <margaux@acme.com<mailto:msureau@acme.com>>
 Subject: TR: ***URGENT*** 2028/22/kb Integer consequat non purus
-Bonjour,
-
-
-----------Forwarded Message ----------
-
-De: undefined<mailto:undefined>
-
-Date: Friday, 10 February 2023 at 11:33
-
-Sujet: TR: Dossier N° IA - 9349549 16.03.2022 - Acme / da
-SF - references CB 345839458
-
-À: Laura Singleton <laura@dayrep.com<mailto:laura@dayrep.com>>
-
-From: Valéry <va@acme.com<mailto:va@acme.com>>
-Date: Tuesday, 7 February 2023 at 18:04
-To: Laura Singleton <laura@dayrep.com<mailto:laura@dayrep.com>>
-Cc: Walter Sheltan <walter.sheltan@acme.com<mailto:walter.sheltan@acme.com>>Nicholas <nicholas@globex.corp<mailto:nicholas@globex.corp>>
-Subject: Dossier N° IA - Integer consequat non purus
-references CB 345839458
-
-
 Aenean quis diam urna. Maecenas eleifend vulputate ligula ac consequat. Pellentesque cursus tincidunt mauris non venenatis.
 
 Sed nec facilisis tellus. Nunc eget eros quis ex congue iaculis nec quis massa. Morbi in nisi tincidunt, euismod ante eget, eleifend nisi.
