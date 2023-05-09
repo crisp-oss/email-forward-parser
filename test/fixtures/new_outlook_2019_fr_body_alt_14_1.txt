@@ -7,6 +7,7 @@ Envoyé : jeudi 6 avril 2023 16:17
 À : <bessie.berry@acme.com>
 Cc : Walter Sheltan <walter.sheltan@acme.com>; Nicholas <nicholas@globex.corp>
 Objet : Integer consequat non purus
+
 Aenean quis diam urna. Maecenas eleifend vulputate ligula ac consequat. Pellentesque cursus tincidunt mauris non venenatis.
 Sed nec facilisis tellus. Nunc eget eros quis ex congue iaculis nec quis massa. Morbi in nisi tincidunt, euismod ante eget, eleifend nisi.
 
@@ -17,6 +18,7 @@ Envoyé : lundi 27 mars 2023 15:33
 À : Suzanne <suzanne@globex.corp<mailto:suzanne@globex.corp>>; Laura Singleton <laura@dayrep.com<mailto:laura@dayrep.com>>;
 Cc : Walter Sheltan <walter.sheltan@acme.com<mailto:walter.sheltan@acme.com>>; Nicholas <nicholas@globex.corp<mailto:nicholas@globex.corp>>
 Objet : RE: ***URGENT*** Integer consequat non purus
+
 Unicum iter ad supremum.
 
 De : Laura Singleton <laura@dayrep.com>
@@ -24,6 +26,7 @@ Envoyé : jeudi 23 mars 2023 16:47
 À : Suzanne <suzanne@globex.corp<mailto:suzanne@globex.corp>>; Laura Singleton <laura@dayrep.com<mailto:laura@dayrep.com>>
 Cc : Walter Sheltan <walter.sheltan@acme.com<mailto:walter.sheltan@acme.com>>; Nicholas <nicholas@globex.corp<mailto:nicholas@globex.corp>>
 Objet : RE: ***URGENT*** Integer consequat non purus
+
 Unicum iter ad supremum.
 
 De : Laura Singleton <laura@dayrep.com>
@@ -31,6 +34,7 @@ Envoyé : jeudi 23 mars 2023 15:49
 À : Suzanne <suzanne@globex.corp<mailto:suzanne@globex.corp>>; Laura Singleton <laura@dayrep.com<mailto:laura@dayrep.com>>
 Cc : Walter Sheltan <walter.sheltan@acme.com<mailto:walter.sheltan@acme.com>>; Nicholas <nicholas@globex.corp<mailto:nicholas@globex.corp>>
 Objet : RE: ***URGENT*** Integer consequat non purus
+
 Unicum iter ad supremum.
 
 De : Valéry <va@acme.com<mailto:va@acme.com>>
@@ -38,6 +42,7 @@ Envoyé : vendredi 3 mars 2023 15:11
 À : Suzanne <suzanne@globex.corp<mailto:suzanne@globex.corp>>; Laura Singleton <laura@dayrep.com<mailto:laura@dayrep.com>>
 Cc : Walter Sheltan <walter.sheltan@acme.com<mailto:walter.sheltan@acme.com>>; Nicholas <nicholas@globex.corp<mailto:nicholas@globex.corp>>
 Objet : RE: ***URGENT*** Integer consequat non purus
+
 Unicum iter ad supremum.
 
 De : Valéry
@@ -45,6 +50,7 @@ Envoyé : mercredi 22 février 2023 11:27
 À : Suzanne <suzanne@globex.corp<mailto:suzanne@globex.corp>>; Laura Singleton <laura@dayrep.com<mailto:laura@dayrep.com>>
 Cc : Walter Sheltan <walter.sheltan@acme.com<mailto:walter.sheltan@acme.com>>; Nicholas <nicholas@globex.corp<mailto:nicholas@globex.corp>>
 Objet : RE: ***URGENT*** Integer consequat non purus
+
 Unicum iter ad supremum.
 
 De : Valéry
@@ -52,6 +58,7 @@ Envoyé : mercredi 22 février 2023 09:01
 À : Suzanne <suzanne@globex.corp<mailto:suzanne@globex.corp>>; Laura Singleton <laura@dayrep.com<mailto:laura@dayrep.com>>
 Cc : Walter Sheltan <walter.sheltan@acme.com<mailto:walter.sheltan@acme.com>>; Nicholas <nicholas@globex.corp<mailto:nicholas@globex.corp>>
 Objet : RE: ***URGENT*** Integer consequat non purus
+
 Unicum iter ad supremum.
 
 De : Suzanne <suzanne@globex.corp<mailto:suzanne@globex.corp>>
@@ -59,6 +66,7 @@ Envoyé : mardi 21 février 2023 18:03
 À : Laura Singleton <laura@dayrep.com<mailto:laura@dayrep.com>>; Valéry <va@acme.com<mailto:va@acme.com>>
 Cc : Walter Sheltan <walter.sheltan@acme.com<mailto:walter.sheltan@acme.com>>; Nicholas <nicholas@globex.corp<mailto:nicholas@globex.corp>>
 Objet : RE: ***URGENT*** Integer consequat non purus
+
 Unicum iter ad supremum.
 
 De : Laura Singleton <laura@dayrep.com<mailto:laura@dayrep.com>>
@@ -66,7 +74,6 @@ Envoyé : mardi 21 février 2023 17:50
 À : Valéry <va@acme.com<mailto:va@acme.com>>
 Cc : walter.sheltan@acme.com<mailto:walter.sheltan@acme.com>; Nicholas <nicholas@globex.corp<mailto:nicholas@globex.corp>>
 Objet : [EXTERNAL] RE: ***URGENT*** Integer consequat non purus
-Importance : Haute
 
 Unicum iter ad supremum.
 
@@ -75,6 +82,7 @@ Envoyé : mardi 21 février 2023 17:17
 À : Valéry <va@acme.com<mailto:va@acme.com>>
 Cc : Laura Singleton <laura@dayrep.com<mailto:laura@dayrep.com>>; walter.sheltan@acme.com<mailto:walter.sheltan@acme.com>
 Objet : ***URGENT*** Integer consequat non purus
+345839458 nos réf 2028/22/KAB
 Importance : Haute
 
 Unicum iter ad supremum.
@@ -84,7 +92,6 @@ Envoyé : mardi 21 février 2023 16:49
 À : Office <office@acme.com<mailto:office@acme.com>>
 Cc : Margaux <margaux@acme.com<mailto:msureau@acme.com>>
 Objet : TR: ***URGENT*** 2028/22/kb Integer consequat non purus
-Importance : Haute
 
 Bonjour,
 

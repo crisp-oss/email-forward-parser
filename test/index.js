@@ -279,13 +279,13 @@ module.exports = {
           test,
           result,
 
-          //- [skipFrom]
+          //-[skipFrom]
           false,
 
-          //- [skipTo]
+          //-[skipTo]
           entryName.startsWith("outlook_2019_") ? true : false,
 
-          //- [skipCc]
+          //-[skipCc]
           (
             (
               entryName.startsWith("outlook_2019_") ||
@@ -295,7 +295,7 @@ module.exports = {
               : false
           ),
 
-          //- [skipMessage]
+          //-[skipMessage]
           true
         );
 
@@ -325,10 +325,10 @@ module.exports = {
           test,
           result,
 
-          false, //- [skipFrom]
-          true, //- [skipTo]
-          true, //- [skipCc]
-          true //- [skipMessage]
+          false, //-[skipFrom]
+          true, //-[skipTo]
+          true, //-[skipCc]
+          true //-[skipMessage]
         );
 
         test.strictEqual(((result.email.to || [])[0] || {}).address, TO_ADDRESS_1);
@@ -365,13 +365,13 @@ module.exports = {
           test,
           result,
 
-          //- [skipFrom]
+          //-[skipFrom]
           false,
 
-          //- [skipTo]
+          //-[skipTo]
           true,
 
-          //- [skipCc]
+          //-[skipCc]
           (
             (
               entryName === "outlook_2019_en_body_alt_2" ||
@@ -411,10 +411,10 @@ module.exports = {
           test,
           result,
 
-          false, //- [skipFrom]
-          true, //- [skipTo]
-          true, //- [skipCc]
-          true //- [skipMessage]
+          false, //-[skipFrom]
+          true, //-[skipTo]
+          true, //-[skipCc]
+          true //-[skipMessage]
         );
 
         test.strictEqual(((result.email.to || [])[0] || {}).address, TO_ADDRESS_1);
@@ -467,10 +467,10 @@ module.exports = {
           test,
           result,
 
-          true, //- [skipFrom]
-          false, //- [skipTo]
-          false, //- [skipCc]
-          true //- [skipMessage]
+          true, //-[skipFrom]
+          false, //-[skipTo]
+          false, //-[skipCc]
+          true //-[skipMessage]
         );
 
         test.strictEqual((result.email.from || {}).address, FROM_ADDRESS);
@@ -493,10 +493,10 @@ module.exports = {
           test,
           result,
 
-          false, //- [skipFrom]
-          false, //- [skipTo]
-          true, //- [skipCc]
-          true //- [skipMessage]
+          false, //-[skipFrom]
+          false, //-[skipTo]
+          true, //-[skipCc]
+          true //-[skipMessage]
         );
       }
     );
@@ -516,10 +516,10 @@ module.exports = {
           test,
           result,
 
-          false, //- [skipFrom]
-          true, //- [skipTo]
-          true, //- [skipCc]
-          true //- [skipMessage]
+          false, //-[skipFrom]
+          true, //-[skipTo]
+          true, //-[skipCc]
+          true //-[skipMessage]
         );
 
         test.strictEqual(((result.email.to || [])[0] || {}).address, TO_ADDRESS_1);
@@ -603,10 +603,10 @@ module.exports = {
           test,
           result,
 
-          true, //- [skipFrom]
-          true, //- [skipTo]
-          true, //- [skipCc]
-          true //- [skipMessage]
+          true, //-[skipFrom]
+          true, //-[skipTo]
+          true, //-[skipCc]
+          true //-[skipMessage]
         );
 
         test.strictEqual((result.email.from || {}).address, FROM_ADDRESS);
@@ -639,10 +639,10 @@ module.exports = {
           test,
           result,
 
-          true, //- [skipFrom]
-          true, //- [skipTo]
-          true, //- [skipCc]
-          true //- [skipMessage]
+          true, //-[skipFrom]
+          true, //-[skipTo]
+          true, //-[skipCc]
+          true //-[skipMessage]
         );
 
         test.strictEqual((result.email.from || {}).address, null);
@@ -668,11 +668,11 @@ module.exports = {
           test,
           result,
 
-          false, //- [skipFrom]
-          false, //- [skipTo]
-          false, //- [skipCc]
-          false, //- [skipMessage]
-          true, //- [skipBody]
+          false, //-[skipFrom]
+          false, //-[skipTo]
+          false, //-[skipCc]
+          false, //-[skipMessage]
+          true, //-[skipBody]
         );
 
         test.equal(result.email.body.startsWith(BODY), true);
@@ -686,22 +686,29 @@ module.exports = {
   testAlternative14: function(test) {
     loopTests(
       [
-        ["new_outlook_2019_fr_body_alt_14", "new_outlook_2019_fr_subject"]
+        ["new_outlook_2019_fr_body_alt_14", "new_outlook_2019_fr_subject"],
+        ["new_outlook_2019_fr_body_alt_14_1", "new_outlook_2019_fr_subject"]
       ],
 
-      (result) => {
+      (result, entryName) => {
         testEmail(
           test,
           result,
 
-          false, //- [skipFrom]
-          false, //- [skipTo]
-          false, //- [skipCc]
-          false, //- [skipMessage]
-          true, //- [skipBody]
+          false, //-[skipFrom]
+          false, //-[skipTo]
+          false, //-[skipCc]
+          false, //-[skipMessage]
+          true, //-[skipBody]
         );
 
-        test.equal(result.email.body.startsWith(BODY), true);
+        // Perform a quick extraction of the body from the file, so that we \
+        //   can compare it
+        var email = fs.readFileSync(`${__dirname}/fixtures/${entryName}.txt`, "utf-8");
+        var subject = "Objet : Integer consequat non purus\n";
+        var body = email.split(subject)[1].trim();
+
+        test.strictEqual(result.email.body, body);
       }
     );
 
