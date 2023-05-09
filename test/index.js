@@ -686,8 +686,11 @@ module.exports = {
   testAlternative14: function(test) {
     loopTests(
       [
-        ["new_outlook_2019_fr_body_alt_14", "new_outlook_2019_fr_subject"],
-        ["new_outlook_2019_fr_body_alt_14_1", "new_outlook_2019_fr_subject"]
+        "gmail_en_body_alt_14",
+        ["outlook_live_en_body_alt_14", "outlook_live_en_subject"],
+        ["new_outlook_2019_en_body_alt_14", "new_outlook_2019_fr_subject"],
+        ["new_outlook_2019_en_body_alt_14_1", "new_outlook_2019_fr_subject"],
+        "thunderbird_en_body_alt_14"
       ],
 
       (result, entryName) => {
@@ -705,8 +708,13 @@ module.exports = {
         // Perform a quick extraction of the body from the file, so that we \
         //   can compare it
         var email = fs.readFileSync(`${__dirname}/fixtures/${entryName}.txt`, "utf-8");
-        var subject = "Objet : Integer consequat non purus\n";
-        var body = email.split(subject)[1].trim();
+        var separator = "Subject: Integer consequat non purus\n";
+
+        if (entryName === "thunderbird_en_body_alt_14") {
+          separator = "CC: 	Walter Sheltan <walter.sheltan@acme.com>, Nicholas <nicholas@globex.corp>\n";
+        }
+
+        var body = email.split(separator)[1].trim();
 
         test.strictEqual(result.email.body, body);
       }
