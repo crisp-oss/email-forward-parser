@@ -2,13 +2,13 @@ Praesent suscipit egestas hendrerit.
 
 Aliquam eget dui dui.
 
-Début du message transféré :
+Begin forwarded message:
 
 > De: John Doe <john.doe@acme.com>
 > Date: 17 août 2022 à 09:06:24 UTC+2
 > À: <bessie.berry@acme.com>
 > Cc: Walter Sheltan <walter.sheltan@acme.com>, Nicholas <nicholas@globex.corp>
-> Objet: Integer consequat non purus
+> Subject: Integer consequat non purus
 >
 > ﻿
 > Aenean quis diam urna. Maecenas eleifend vulputate ligula ac consequat. Pellentesque cursus tincidunt mauris non venenatis.

@@ -544,7 +544,7 @@ module.exports = {
         "outlook_live_en_body_alt_8"
       ],
 
-      (result) => {
+      (result, entryName) => {
         testEmail(
           test,
           result,
@@ -558,8 +558,8 @@ module.exports = {
 
         // Perform a quick extraction of the body from the file, so that we \
         //   can compare it
-        var email = fs.readFileSync(`${__dirname}/fixtures/outlook_live_en_body_alt_8.txt`, "utf-8");
-        var separator = "Subject: Integer consequat non purus\n";
+        var email = fs.readFileSync(`${__dirname}/fixtures/${entryName}.txt`, "utf-8");
+        var separator = `Subject: ${SUBJECT}\n`;
 
         var body = email.split(separator)[1].trim();
 
@@ -675,10 +675,10 @@ module.exports = {
   testAlternative13: function(test) {
     loopTests(
       [
-        "apple_mail_fr_body_alt_13"
+        "apple_mail_en_body_alt_13"
       ],
 
-      (result) => {
+      (result, entryName) => {
         testEmail(
           test,
           result,
@@ -690,6 +690,18 @@ module.exports = {
           true, //-[skipBody]
         );
 
+        // Perform a quick extraction of the body from the file, so that we \
+        //   can compare it
+        var email = fs.readFileSync(`${__dirname}/fixtures/${entryName}.txt`, "utf-8");
+        var separator = `Subject: ${SUBJECT}\n`;
+
+        var body = email.split(separator)[1];
+
+        body = body.replace(/^(>+)\s?$/gm, "");
+        body = body.replace(/^(>+)\s?/gm, "");
+        body = body.trim();
+
+        test.strictEqual(result.email.body, body);
         test.equal(result.email.body.startsWith(BODY), true);
       }
     );
@@ -723,10 +735,50 @@ module.exports = {
         // Perform a quick extraction of the body from the file, so that we \
         //   can compare it
         var email = fs.readFileSync(`${__dirname}/fixtures/${entryName}.txt`, "utf-8");
-        var separator = "Subject: Integer consequat non purus\n";
+        var separator = `Subject: ${SUBJECT}\n`;
 
         if (entryName === "thunderbird_en_body_alt_14") {
-          separator = "CC: 	Walter Sheltan <walter.sheltan@acme.com>, Nicholas <nicholas@globex.corp>\n";
+          separator = `CC: 	${CC_NAME_1} <${CC_ADDRESS_1}>, ${CC_NAME_2} <${CC_ADDRESS_2}>\n`;
+        }
+
+        var body = email.split(separator)[1].trim();
+
+        test.strictEqual(result.email.body, body);
+      }
+    );
+
+    test.done();
+  },
+
+  // Test: alternative 15 (multiple nested emails from different providers)
+  testAlternative15: function(test) {
+    loopTests(
+      [
+        "gmail_en_body_alt_15",
+        ["outlook_live_en_body_alt_15", "outlook_live_en_subject"],
+        ["new_outlook_2019_en_body_alt_15", "new_outlook_2019_fr_subject"],
+        "thunderbird_en_body_alt_15"
+      ],
+
+      (result, entryName) => {
+        testEmail(
+          test,
+          result,
+
+          false, //-[skipFrom]
+          false, //-[skipTo]
+          false, //-[skipCc]
+          false, //-[skipMessage]
+          true, //-[skipBody]
+        );
+
+        // Perform a quick extraction of the body from the file, so that we \
+        //   can compare it
+        var email = fs.readFileSync(`${__dirname}/fixtures/${entryName}.txt`, "utf-8");
+        var separator = `Subject: ${SUBJECT}\n`;
+
+        if (entryName === "thunderbird_en_body_alt_15") {
+          separator = `CC: 	${CC_NAME_1} <${CC_ADDRESS_1}>, ${CC_NAME_2} <${CC_ADDRESS_2}>\n`;
         }
 
         var body = email.split(separator)[1].trim();
