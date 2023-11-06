@@ -1,6 +1,6 @@
 {
   "name": "email-forward-parser",
-  "version": "1.4.2",
+  "version": "1.5.6",
   "description": "Parses forwarded emails and extract content",
   "author": "Eliott Vincent <eliott@crisp.chat>",
   "main": "lib/index.js",
@@ -12,6 +12,10 @@
   "bugs": {
     "url": "https://github.com/crisp-oss/email-forward-parser/issues"
   },
+  "engineStrict": true,
+  "engines": {
+    "node": ">=14.18.0"
+  },
   "scripts": {
     "test": "nodeunit ./test/index.js"
   },
@@ -19,7 +23,7 @@
     "nodeunit-x": "0.15.0"
   },
   "dependencies": {
-    "re2": "1.18.0"
+    "re2": "1.20.1"
   },
   "keywords": [
     "parser",
