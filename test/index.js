@@ -306,18 +306,18 @@ module.exports = {
     test.done();
   },
 
-  // Test: alternative 1 (no Cc, multiple To)
-  testAlternative1: function(test) {
+  // Test: variant 1 (no Cc, multiple To)
+  testVariant1: function(test) {
     loopTests(
       [
-        "apple_mail_en_body_alt_1",
-        "gmail_en_body_alt_1",
-        "hubspot_en_body_alt_1",
-        "missive_en_body_alt_1",
-        ["outlook_live_en_body_alt_1", "outlook_live_en_subject"],
-        ["new_outlook_2019_en_body_alt_1", "new_outlook_2019_en_subject"],
-        "yahoo_en_body_alt_1",
-        "thunderbird_en_body_alt_1"
+        "apple_mail_en_body_variant_1",
+        "gmail_en_body_variant_1",
+        "hubspot_en_body_variant_1",
+        "missive_en_body_variant_1",
+        ["outlook_live_en_body_variant_1", "outlook_live_en_subject"],
+        ["new_outlook_2019_en_body_variant_1", "new_outlook_2019_en_subject"],
+        "yahoo_en_body_variant_1",
+        "thunderbird_en_body_variant_1"
       ],
 
       (result) => {
@@ -343,20 +343,20 @@ module.exports = {
     test.done();
   },
 
-  // Test: alternative 2 (with message)
-  testAlternative2: function(test) {
+  // Test: variant 2 (with message)
+  testVariant2: function(test) {
     loopTests(
       [
-        "apple_mail_en_body_alt_2",
-        "gmail_en_body_alt_2",
-        "hubspot_en_body_alt_2",
-        "ionos_one_and_one_en_body_alt_2",
-        "missive_en_body_alt_2",
-        ["outlook_live_en_body_alt_2", "outlook_live_en_subject"],
-        ["new_outlook_2019_en_body_alt_2", "new_outlook_2019_en_subject"],
-        ["outlook_2019_en_body_alt_2", "outlook_2019_subject"],
-        "yahoo_en_body_alt_2",
-        "thunderbird_en_body_alt_2"
+        "apple_mail_en_body_variant_2",
+        "gmail_en_body_variant_2",
+        "hubspot_en_body_variant_2",
+        "ionos_one_and_one_en_body_variant_2",
+        "missive_en_body_variant_2",
+        ["outlook_live_en_body_variant_2", "outlook_live_en_subject"],
+        ["new_outlook_2019_en_body_variant_2", "new_outlook_2019_en_subject"],
+        ["outlook_2019_en_body_variant_2", "outlook_2019_subject"],
+        "yahoo_en_body_variant_2",
+        "thunderbird_en_body_variant_2"
       ],
 
       (result, entryName) => {
@@ -374,8 +374,8 @@ module.exports = {
           //-[skipCc]
           (
             (
-              entryName === "outlook_2019_en_body_alt_2" ||
-                entryName === "ionos_one_and_one_en_body_alt_2"
+              entryName === "outlook_2019_en_body_variant_2" ||
+                entryName === "ionos_one_and_one_en_body_variant_2"
             )
               ? true
               : false
@@ -383,7 +383,7 @@ module.exports = {
         );
 
         // Notice: do not test To, as Outlook 2019 simply doesn't embed them
-        if (entryName !== "outlook_2019_en_body_alt_2") {
+        if (entryName !== "outlook_2019_en_body_variant_2") {
           test.strictEqual(((result.email.to || [])[0] || {}).address, TO_ADDRESS_1);
           test.strictEqual(((result.email.to || [])[1] || {}).address, TO_ADDRESS_2);
         }
@@ -393,17 +393,17 @@ module.exports = {
     test.done();
   },
 
-  // Test: alternative 3 (different forms of From / To / Cc)
-  testAlternative3: function(test) {
+  // Test: variant 3 (different forms of From / To / Cc)
+  testVariant3: function(test) {
     loopTests(
       [
-        "apple_mail_en_body_alt_3",
-        "gmail_en_body_alt_3",
-        "missive_en_body_alt_3",
-        ["outlook_live_en_body_alt_3", "outlook_live_en_subject"],
-        ["new_outlook_2019_en_body_alt_3", "new_outlook_2019_en_subject"],
-        "yahoo_en_body_alt_3",
-        "thunderbird_en_body_alt_3"
+        "apple_mail_en_body_variant_3",
+        "gmail_en_body_variant_3",
+        "missive_en_body_variant_3",
+        ["outlook_live_en_body_variant_3", "outlook_live_en_subject"],
+        ["new_outlook_2019_en_body_variant_3", "new_outlook_2019_en_subject"],
+        "yahoo_en_body_variant_3",
+        "thunderbird_en_body_variant_3"
       ],
 
       (result) => {
@@ -432,19 +432,19 @@ module.exports = {
     test.done();
   },
 
-  // Test: alternative 4 (not-forwarded)
-  testAlternative4: function(test) {
+  // Test: variant 4 (not-forwarded)
+  testVariant4: function(test) {
     loopTests(
       [
-        "apple_mail_en_body_alt_4",
-        "gmail_en_body_alt_4",
-        "hubspot_en_body_alt_4",
-        "missive_en_body_alt_4",
-        ["outlook_live_en_body_alt_4", "outlook_live_en_subject_alt_4"],
-        ["new_outlook_2019_en_body_alt_4", "new_outlook_2019_en_subject_alt_4"],
-        ["outlook_2019_en_body_alt_4", "outlook_2019_en_subject_alt_4"],
-        "yahoo_en_body_alt_4",
-        "thunderbird_en_body_alt_4"
+        "apple_mail_en_body_variant_4",
+        "gmail_en_body_variant_4",
+        "hubspot_en_body_variant_4",
+        "missive_en_body_variant_4",
+        ["outlook_live_en_body_variant_4", "outlook_live_en_subject_variant_4"],
+        ["new_outlook_2019_en_body_variant_4", "new_outlook_2019_en_subject_variant_4"],
+        ["outlook_2019_en_body_variant_4", "outlook_2019_en_subject_variant_4"],
+        "yahoo_en_body_variant_4",
+        "thunderbird_en_body_variant_4"
       ],
 
       (result) => {
@@ -455,11 +455,11 @@ module.exports = {
     test.done();
   },
 
-  // Test: alternative 5 (no name for From)
-  testAlternative5: function(test) {
+  // Test: variant 5 (no name for From)
+  testVariant5: function(test) {
     loopTests(
       [
-        "apple_mail_en_body_alt_5"
+        "apple_mail_en_body_variant_5"
       ],
 
       (result) => {
@@ -481,11 +481,11 @@ module.exports = {
     test.done();
   },
 
-  // Test: alternative 6 (with Reply-To)
-  testAlternative6: function(test) {
+  // Test: variant 6 (with Reply-To)
+  testVariant6: function(test) {
     loopTests(
       [
-        "apple_mail_en_body_alt_6"
+        "apple_mail_en_body_variant_6"
       ],
 
       (result) => {
@@ -504,11 +504,11 @@ module.exports = {
     test.done();
   },
 
-  // Test: alternative 7 (with quotes-wrapped names for To)
-  testAlternative7: function(test) {
+  // Test: variant 7 (with quotes-wrapped names for To)
+  testVariant7: function(test) {
     loopTests(
       [
-        "apple_mail_en_body_alt_7"
+        "apple_mail_en_body_variant_7"
       ],
 
       (result) => {
@@ -537,11 +537,11 @@ module.exports = {
     test.done();
   },
 
-  // Test: alternative 8 (signature containing a separator)
-  testAlternative8: function(test) {
+  // Test: variant 8 (signature containing a separator)
+  testVariant8: function(test) {
     loopTests(
       [
-        "outlook_live_en_body_alt_8"
+        "outlook_live_en_body_variant_8"
       ],
 
       (result, entryName) => {
@@ -570,11 +570,11 @@ module.exports = {
     test.done();
   },
 
-  // Test: alternative 9 (multiple From)
-  testAlternative9: function(test) {
+  // Test: variant 9 (multiple From)
+  testVariant9: function(test) {
     loopTests(
       [
-        "outlook_live_en_body_alt_9"
+        "outlook_live_en_body_variant_9"
       ],
 
       (result) => {
@@ -588,11 +588,11 @@ module.exports = {
     test.done();
   },
 
-  // Test: alternative 10 (no separator and different forms of labels)
-  testAlternative10: function(test) {
+  // Test: variant 10 (no separator and different forms of labels)
+  testVariant10: function(test) {
     loopTests(
       [
-        ["outlook_live_en_body_alt_10", "outlook_live_en_subject_alt_10"]
+        ["outlook_live_en_body_variant_10", "outlook_live_en_subject_variant_10"]
       ],
 
       (result) => {
@@ -606,11 +606,11 @@ module.exports = {
     test.done();
   },
 
-  // Test: alternative 11 (coma in From)
-  testAlternative11: function(test) {
+  // Test: variant 11 (coma in From)
+  testVariant11: function(test) {
     loopTests(
       [
-        "outlook_live_en_body_alt_11"
+        "outlook_live_en_body_variant_11"
       ],
 
       (result) => {
@@ -642,11 +642,11 @@ module.exports = {
     test.done();
   },
 
-  // Test: alternative 12 (no email for From and To)
-  testAlternative12: function(test) {
+  // Test: variant 12 (no email for From and To)
+  testVariant12: function(test) {
     loopTests(
       [
-        ["unknown_en_body_alt_12", "unknown_en_subject"]
+        ["unknown_en_body_variant_12", "unknown_en_subject"]
       ],
 
       (result) => {
@@ -671,11 +671,11 @@ module.exports = {
     test.done();
   },
 
-  // Test: alternative 13 (nested emails)
-  testAlternative13: function(test) {
+  // Test: variant 13 (nested emails)
+  testVariant13: function(test) {
     loopTests(
       [
-        "apple_mail_en_body_alt_13"
+        "apple_mail_en_body_variant_13"
       ],
 
       (result, entryName) => {
@@ -709,15 +709,15 @@ module.exports = {
     test.done();
   },
 
-  // Test: alternative 14 (multiple nested emails)
-  testAlternative14: function(test) {
+  // Test: variant 14 (multiple nested emails)
+  testVariant14: function(test) {
     loopTests(
       [
-        "gmail_en_body_alt_14",
-        ["outlook_live_en_body_alt_14", "outlook_live_en_subject"],
-        ["new_outlook_2019_en_body_alt_14", "new_outlook_2019_fr_subject"],
-        ["new_outlook_2019_en_body_alt_14_1", "new_outlook_2019_fr_subject"],
-        "thunderbird_en_body_alt_14"
+        "gmail_en_body_variant_14",
+        ["outlook_live_en_body_variant_14", "outlook_live_en_subject"],
+        ["new_outlook_2019_en_body_variant_14", "new_outlook_2019_fr_subject"],
+        ["new_outlook_2019_en_body_variant_14_1", "new_outlook_2019_fr_subject"],
+        "thunderbird_en_body_variant_14"
       ],
 
       (result, entryName) => {
@@ -737,7 +737,7 @@ module.exports = {
         var email = fs.readFileSync(`${__dirname}/fixtures/${entryName}.txt`, "utf-8");
         var separator = `Subject: ${SUBJECT}\n`;
 
-        if (entryName === "thunderbird_en_body_alt_14") {
+        if (entryName === "thunderbird_en_body_variant_14") {
           separator = `CC: 	${CC_NAME_1} <${CC_ADDRESS_1}>, ${CC_NAME_2} <${CC_ADDRESS_2}>\n`;
         }
 
@@ -750,14 +750,14 @@ module.exports = {
     test.done();
   },
 
-  // Test: alternative 15 (multiple nested emails from different providers)
-  testAlternative15: function(test) {
+  // Test: variant 15 (multiple nested emails from different providers)
+  testVariant15: function(test) {
     loopTests(
       [
-        "gmail_en_body_alt_15",
-        ["outlook_live_en_body_alt_15", "outlook_live_en_subject"],
-        ["new_outlook_2019_en_body_alt_15", "new_outlook_2019_fr_subject"],
-        "thunderbird_en_body_alt_15"
+        "gmail_en_body_variant_15",
+        ["outlook_live_en_body_variant_15", "outlook_live_en_subject"],
+        ["new_outlook_2019_en_body_variant_15", "new_outlook_2019_fr_subject"],
+        "thunderbird_en_body_variant_15"
       ],
 
       (result, entryName) => {
@@ -777,7 +777,7 @@ module.exports = {
         var email = fs.readFileSync(`${__dirname}/fixtures/${entryName}.txt`, "utf-8");
         var separator = `Subject: ${SUBJECT}\n`;
 
-        if (entryName === "thunderbird_en_body_alt_15") {
+        if (entryName === "thunderbird_en_body_variant_15") {
           separator = `CC: 	${CC_NAME_1} <${CC_ADDRESS_1}>, ${CC_NAME_2} <${CC_ADDRESS_2}>\n`;
         }
 
