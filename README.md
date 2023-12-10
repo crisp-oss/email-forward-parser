@@ -98,6 +98,7 @@ Thunderbird | Yes | Yes | No | Yes | Yes | Yes | --
 Missive | Yes | Yes | No | No | Yes | No | --
 HubSpot | Yes | Yes | Yes | Yes | Yes | Yes | --
 IONOS by 1 & 1 | ? | Yes | ? | ? | Yes | ? | --
+MailMate | Yes | Yes | No | No | Yes | No | --
 
 ## Contributing
 

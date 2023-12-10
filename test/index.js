@@ -170,6 +170,8 @@ module.exports = {
 
         "ionos_one_and_one_en_body",
 
+        "mailmate_en_body",
+
         "missive_en_body",
 
         ["outlook_live_body", "outlook_live_cs_subject"],
@@ -313,6 +315,7 @@ module.exports = {
         "apple_mail_en_body_variant_1",
         "gmail_en_body_variant_1",
         "hubspot_en_body_variant_1",
+        "mailmate_en_body_variant_1",
         "missive_en_body_variant_1",
         ["outlook_live_en_body_variant_1", "outlook_live_en_subject"],
         ["new_outlook_2019_en_body_variant_1", "new_outlook_2019_en_subject"],
@@ -351,6 +354,7 @@ module.exports = {
         "gmail_en_body_variant_2",
         "hubspot_en_body_variant_2",
         "ionos_one_and_one_en_body_variant_2",
+        "mailmate_en_body_variant_2",
         "missive_en_body_variant_2",
         ["outlook_live_en_body_variant_2", "outlook_live_en_subject"],
         ["new_outlook_2019_en_body_variant_2", "new_outlook_2019_en_subject"],
@@ -439,6 +443,7 @@ module.exports = {
         "apple_mail_en_body_variant_4",
         "gmail_en_body_variant_4",
         "hubspot_en_body_variant_4",
+        "mailmate_en_body_variant_4",
         "missive_en_body_variant_4",
         ["outlook_live_en_body_variant_4", "outlook_live_en_subject_variant_4"],
         ["new_outlook_2019_en_body_variant_4", "new_outlook_2019_en_subject_variant_4"],
