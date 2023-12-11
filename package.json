@@ -1,6 +1,6 @@
 {
   "name": "email-forward-parser",
-  "version": "1.5.9",
+  "version": "1.5.10",
   "description": "Parses forwarded emails and extract content",
   "author": "Eliott Vincent <eliott@crisp.chat>",
   "main": "lib/index.js",
@@ -23,7 +23,7 @@
     "nodeunit-x": "0.15.0"
   },
   "dependencies": {
-    "re2": "1.20.1"
+    "re2": "1.20.9"
   },
   "keywords": [
     "parser",
