@@ -4,6 +4,7 @@
   "description": "Parses forwarded emails and extract content",
   "author": "Eliott Vincent <eliott@crisp.chat>",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "homepage": "https://github.com/crisp-oss/email-forward-parser",
   "repository": {
     "type": "git",
