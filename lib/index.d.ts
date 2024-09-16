@@ -1,4 +1,4 @@
-declare module 'email-forward-parser' {
+declare module "email-forward-parser" {
   class EmailForwardParser {
     read(
       body: string,
