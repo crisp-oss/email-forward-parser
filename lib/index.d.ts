@@ -1,5 +1,7 @@
 declare module "email-forward-parser" {
   class EmailForwardParser {
+    constructor()
+
     read(
       body: string,
       subject?: string,
