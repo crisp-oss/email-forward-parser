@@ -1,0 +1,2041 @@
+{
+  "quote_line_break": {
+    "source": "^(>+)\\s?$",
+    "flags": "gm"
+  },
+  "quote": {
+    "source": "^(>+)\\s?",
+    "flags": "gm"
+  },
+  "four_spaces": {
+    "source": "^(\\ {4})\\s?",
+    "flags": "gm"
+  },
+  "carriage_return": {
+    "source": "\\r\\n",
+    "flags": "gm"
+  },
+  "byte_order_mark": {
+    "source": "\\uFEFF",
+    "flags": "gm"
+  },
+  "trailing_non_breaking_space": {
+    "source": "\\u00A0$",
+    "flags": "gm"
+  },
+  "non_breaking_space": {
+    "source": "\\u00A0",
+    "flags": "gm"
+  },
+  "subject": [
+    {
+      "source": "^Fw:(.*)",
+      "flags": "m"
+    },
+    {
+      "source": "^VS:(.*)",
+      "flags": "m"
+    },
+    {
+      "source": "^WG:(.*)",
+      "flags": "m"
+    },
+    {
+      "source": "^RV:(.*)",
+      "flags": "m"
+    },
+    {
+      "source": "^TR:(.*)",
+      "flags": "m"
+    },
+    {
+      "source": "^I:(.*)",
+      "flags": "m"
+    },
+    {
+      "source": "^FW:(.*)",
+      "flags": "m"
+    },
+    {
+      "source": "^Vs:(.*)",
+      "flags": "m"
+    },
+    {
+      "source": "^PD:(.*)",
+      "flags": "m"
+    },
+    {
+      "source": "^ENC:(.*)",
+      "flags": "m"
+    },
+    {
+      "source": "^Redir.:(.*)",
+      "flags": "m"
+    },
+    {
+      "source": "^VB:(.*)",
+      "flags": "m"
+    },
+    {
+      "source": "^VL:(.*)",
+      "flags": "m"
+    },
+    {
+      "source": "^Videresend:(.*)",
+      "flags": "m"
+    },
+    {
+      "source": "^İLT:(.*)",
+      "flags": "m"
+    },
+    {
+      "source": "^Fwd:(.*)",
+      "flags": "m"
+    }
+  ],
+  "subject_line": [],
+  "separator": [
+    {
+      "source": "^>?\\s*Begin forwarded message\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^>?\\s*Začátek přeposílané zprávy\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^>?\\s*Start på videresendt besked\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^>?\\s*Anfang der weitergeleiteten Nachricht\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^>?\\s*Inicio del mensaje reenviado\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^>?\\s*Välitetty viesti alkaa\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^>?\\s*Début du message réexpédié\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^>?\\s*Début du message transféré\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^>?\\s*Započni proslijeđenu poruku\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^>?\\s*Továbbított levél kezdete\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^>?\\s*Inizio messaggio inoltrato\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^>?\\s*Begin doorgestuurd bericht\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^>?\\s*Videresendt melding\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^>?\\s*Początek przekazywanej wiadomości\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^>?\\s*Início da mensagem reencaminhada\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^>?\\s*Início da mensagem encaminhada\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^>?\\s*Începe mesajul redirecționat\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^>?\\s*Начало переадресованного сообщения\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^>?\\s*Začiatok preposlanej správy\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^>?\\s*Vidarebefordrat mejl\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^>?\\s*İleti başlangıcı\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^>?\\s*Початок листа, що пересилається\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{8,10}\\s*Forwarded message\\s*-{8,10}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*_{32}\\s*$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?Forwarded message:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?Dne\\s?.+\\,\\s?.+\\s*[\\[|<].+[\\]|>]\\s?napsal\\(a\\)\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?D.\\s?.+\\s?skrev\\s?\\\".+\\\"\\s*[\\[|<].+[\\]|>]\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?Am\\s?.+\\s?schrieb\\s?\\\".+\\\"\\s*[\\[|<].+[\\]|>]\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?On\\s?.+\\,\\s?\\\".+\\\"\\s*[\\[|<].+[\\]|>]\\s?wrote\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?El\\s?.+\\,\\s?\\\".+\\\"\\s*[\\[|<].+[\\]|>]\\s?escribió\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?Le\\s?.+\\,\\s?«.+»\\s*[\\[|<].+[\\]|>]\\s?a écrit\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?.+\\s*[\\[|<].+[\\]|>]\\s?kirjoitti\\s?.+\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?.+\\s?időpontban\\s?.+\\s*[\\[|<|(].+[\\]|>|)]\\s?ezt írta\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?Il giorno\\s?.+\\s?\\\".+\\\"\\s*[\\[|<].+[\\]|>]\\s?ha scritto\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?Op\\s?.+\\s?heeft\\s?.+\\s*[\\[|<].+[\\]|>]\\s?geschreven\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?.+\\s*[\\[|<].+[\\]|>]\\s?skrev følgende den\\s?.+\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?Dnia\\s?.+\\s?„.+”\\s*[\\[|<].+[\\]|>]\\s?napisał\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?Em\\s?.+\\,\\s?\\\".+\\\"\\s*[\\[|<].+[\\]|>]\\s?escreveu\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?.+\\s?пользователь\\s?\\\".+\\\"\\s*[\\[|<].+[\\]|>]\\s?написал\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?.+\\s?používateľ\\s?.+\\s*\\([\\[|<].+[\\]|>]\\)\\s?napísal\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?Den\\s?.+\\s?skrev\\s?\\\".+\\\"\\s*[\\[|<].+[\\]|>]\\s?följande\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?\\\".+\\\"\\s*[\\[|<].+[\\]|>]\\,\\s?.+\\s?tarihinde şunu yazdı\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{5,8} Přeposlaná zpráva -{5,8}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{5,8} Videresendt meddelelse -{5,8}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{5,10} Weitergeleitete Nachricht -{5,10}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{5,8} Forwarded Message -{5,8}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{5,10} Mensaje reenviado -{5,10}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{5,10} Edelleenlähetetty viesti -{5,10}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{5} Message transmis -{5}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{5,8} Továbbított üzenet -{5,8}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{5,10} Messaggio inoltrato -{5,10}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{5,10} Doorgestuurd bericht -{5,10}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{5,8} Videresendt melding -{5,8}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{5} Przekazana wiadomość -{5}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{5,8} Mensagem reencaminhada -{5,8}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{5,10} Mensagem encaminhada -{5,10}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{5,8} Mesaj redirecționat -{5,8}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{5} Пересылаемое сообщение -{5}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{5} Preposlaná správa -{5}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{5,10} Vidarebefordrat meddelande -{5,10}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{5} İletilmiş Mesaj -{5}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{5} Перенаправлене повідомлення -{5}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{8} Välitetty viesti \\/ Fwd.Msg -{8}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{8,10} Message transféré -{8,10}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{8} Proslijeđena poruka -{8}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{8} Messaggio Inoltrato -{8}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{3} Treść przekazanej wiadomości -{3}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{8} Перенаправленное сообщение -{8}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{8} Preposlaná správa --- Forwarded Message -{8}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{8} İletilen İleti -{8}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{8} Переслане повідомлення -{8}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{9,10} メッセージを転送 -{9,10}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*-{9,10} Wiadomość przesłana dalej -{9,10}\\s*",
+      "flags": "m"
+    },
+    {
+      "source": "^>?\\s*-{10} Original Message -{10}\\s*",
+      "flags": "m"
+    }
+  ],
+  "separator_line": [
+    {
+      "source": "(^>?\\s*Begin forwarded message\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^>?\\s*Začátek přeposílané zprávy\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^>?\\s*Start på videresendt besked\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^>?\\s*Anfang der weitergeleiteten Nachricht\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^>?\\s*Inicio del mensaje reenviado\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^>?\\s*Välitetty viesti alkaa\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^>?\\s*Début du message réexpédié\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^>?\\s*Début du message transféré\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^>?\\s*Započni proslijeđenu poruku\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^>?\\s*Továbbított levél kezdete\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^>?\\s*Inizio messaggio inoltrato\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^>?\\s*Begin doorgestuurd bericht\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^>?\\s*Videresendt melding\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^>?\\s*Początek przekazywanej wiadomości\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^>?\\s*Início da mensagem reencaminhada\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^>?\\s*Início da mensagem encaminhada\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^>?\\s*Începe mesajul redirecționat\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^>?\\s*Начало переадресованного сообщения\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^>?\\s*Začiatok preposlanej správy\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^>?\\s*Vidarebefordrat mejl\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^>?\\s*İleti başlangıcı\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^>?\\s*Початок листа, що пересилається\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{8,10}\\s*Forwarded message\\s*-{8,10}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*_{32}\\s*$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s?Forwarded message:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s?Dne\\s?.+\\,\\s?.+\\s*[\\[|<].+[\\]|>]\\s?napsal\\(a\\)\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s?D.\\s?.+\\s?skrev\\s?\\\".+\\\"\\s*[\\[|<].+[\\]|>]\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s?Am\\s?.+\\s?schrieb\\s?\\\".+\\\"\\s*[\\[|<].+[\\]|>]\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s?On\\s?.+\\,\\s?\\\".+\\\"\\s*[\\[|<].+[\\]|>]\\s?wrote\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s?El\\s?.+\\,\\s?\\\".+\\\"\\s*[\\[|<].+[\\]|>]\\s?escribió\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s?Le\\s?.+\\,\\s?«.+»\\s*[\\[|<].+[\\]|>]\\s?a écrit\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s?.+\\s*[\\[|<].+[\\]|>]\\s?kirjoitti\\s?.+\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s?.+\\s?időpontban\\s?.+\\s*[\\[|<|(].+[\\]|>|)]\\s?ezt írta\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s?Il giorno\\s?.+\\s?\\\".+\\\"\\s*[\\[|<].+[\\]|>]\\s?ha scritto\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s?Op\\s?.+\\s?heeft\\s?.+\\s*[\\[|<].+[\\]|>]\\s?geschreven\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s?.+\\s*[\\[|<].+[\\]|>]\\s?skrev følgende den\\s?.+\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s?Dnia\\s?.+\\s?„.+”\\s*[\\[|<].+[\\]|>]\\s?napisał\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s?Em\\s?.+\\,\\s?\\\".+\\\"\\s*[\\[|<].+[\\]|>]\\s?escreveu\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s?.+\\s?пользователь\\s?\\\".+\\\"\\s*[\\[|<].+[\\]|>]\\s?написал\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s?.+\\s?používateľ\\s?.+\\s*\\([\\[|<].+[\\]|>]\\)\\s?napísal\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s?Den\\s?.+\\s?skrev\\s?\\\".+\\\"\\s*[\\[|<].+[\\]|>]\\s?följande\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s?\\\".+\\\"\\s*[\\[|<].+[\\]|>]\\,\\s?.+\\s?tarihinde şunu yazdı\\s?:)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{5,8} Přeposlaná zpráva -{5,8}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{5,8} Videresendt meddelelse -{5,8}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{5,10} Weitergeleitete Nachricht -{5,10}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{5,8} Forwarded Message -{5,8}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{5,10} Mensaje reenviado -{5,10}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{5,10} Edelleenlähetetty viesti -{5,10}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{5} Message transmis -{5}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{5,8} Továbbított üzenet -{5,8}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{5,10} Messaggio inoltrato -{5,10}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{5,10} Doorgestuurd bericht -{5,10}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{5,8} Videresendt melding -{5,8}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{5} Przekazana wiadomość -{5}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{5,8} Mensagem reencaminhada -{5,8}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{5,10} Mensagem encaminhada -{5,10}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{5,8} Mesaj redirecționat -{5,8}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{5} Пересылаемое сообщение -{5}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{5} Preposlaná správa -{5}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{5,10} Vidarebefordrat meddelande -{5,10}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{5} İletilmiş Mesaj -{5}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{5} Перенаправлене повідомлення -{5}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{8} Välitetty viesti \\/ Fwd.Msg -{8}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{8,10} Message transféré -{8,10}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{8} Proslijeđena poruka -{8}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{8} Messaggio Inoltrato -{8}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{3} Treść przekazanej wiadomości -{3}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{8} Перенаправленное сообщение -{8}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{8} Preposlaná správa --- Forwarded Message -{8}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{8} İletilen İleti -{8}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{8} Переслане повідомлення -{8}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{9,10} メッセージを転送 -{9,10}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*-{9,10} Wiadomość przesłana dalej -{9,10}\\s*)",
+      "flags": "m"
+    },
+    {
+      "source": "(^>?\\s*-{10} Original Message -{10}\\s*)",
+      "flags": "m"
+    }
+  ],
+  "separator_with_information": [
+    {
+      "source": "^\\s?Dne\\s?(?<date>.+)\\,\\s?(?<from_name>.+)\\s*[\\[|<](?<from_address>.+)[\\]|>]\\s?napsal\\(a\\)\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?D.\\s?(?<date>.+)\\s?skrev\\s?\\\"(?<from_name>.+)\\\"\\s*[\\[|<](?<from_address>.+)[\\]|>]\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?Am\\s?(?<date>.+)\\s?schrieb\\s?\\\"(?<from_name>.+)\\\"\\s*[\\[|<](?<from_address>.+)[\\]|>]\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?On\\s?(?<date>.+)\\,\\s?\\\"(?<from_name>.+)\\\"\\s*[\\[|<](?<from_address>.+)[\\]|>]\\s?wrote\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?El\\s?(?<date>.+)\\,\\s?\\\"(?<from_name>.+)\\\"\\s*[\\[|<](?<from_address>.+)[\\]|>]\\s?escribió\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?Le\\s?(?<date>.+)\\,\\s?«(?<from_name>.+)»\\s*[\\[|<](?<from_address>.+)[\\]|>]\\s?a écrit\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?(?<from_name>.+)\\s*[\\[|<](?<from_address>.+)[\\]|>]\\s?kirjoitti\\s?(?<date>.+)\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?(?<date>.+)\\s?időpontban\\s?(?<from_name>.+)\\s*[\\[|<|(](?<from_address>.+)[\\]|>|)]\\s?ezt írta\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?Il giorno\\s?(?<date>.+)\\s?\\\"(?<from_name>.+)\\\"\\s*[\\[|<](?<from_address>.+)[\\]|>]\\s?ha scritto\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?Op\\s?(?<date>.+)\\s?heeft\\s?(?<from_name>.+)\\s*[\\[|<](?<from_address>.+)[\\]|>]\\s?geschreven\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?(?<from_name>.+)\\s*[\\[|<](?<from_address>.+)[\\]|>]\\s?skrev følgende den\\s?(?<date>.+)\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?Dnia\\s?(?<date>.+)\\s?„(?<from_name>.+)”\\s*[\\[|<](?<from_address>.+)[\\]|>]\\s?napisał\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?Em\\s?(?<date>.+)\\,\\s?\\\"(?<from_name>.+)\\\"\\s*[\\[|<](?<from_address>.+)[\\]|>]\\s?escreveu\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?(?<date>.+)\\s?пользователь\\s?\\\"(?<from_name>.+)\\\"\\s*[\\[|<](?<from_address>.+)[\\]|>]\\s?написал\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?(?<date>.+)\\s?používateľ\\s?(?<from_name>.+)\\s*\\([\\[|<](?<from_address>.+)[\\]|>]\\)\\s?napísal\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?Den\\s?(?<date>.+)\\s?skrev\\s?\\\"(?<from_name>.+)\\\"\\s*[\\[|<](?<from_address>.+)[\\]|>]\\s?följande\\s?:",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s?\\\"(?<from_name>.+)\\\"\\s*[\\[|<](?<from_address>.+)[\\]|>]\\,\\s?(?<date>.+)\\s?tarihinde şunu yazdı\\s?:",
+      "flags": "m"
+    }
+  ],
+  "separator_with_information_line": [],
+  "original_subject": [
+    {
+      "source": "^\\*?Subject\\s?:\\*?(.+)",
+      "flags": "im"
+    },
+    {
+      "source": "^Předmět\\s?:(.+)",
+      "flags": "im"
+    },
+    {
+      "source": "^Emne\\s?:(.+)",
+      "flags": "im"
+    },
+    {
+      "source": "^Betreff\\s?:(.+)",
+      "flags": "im"
+    },
+    {
+      "source": "^Asunto\\s?:(.+)",
+      "flags": "im"
+    },
+    {
+      "source": "^Aihe\\s?:(.+)",
+      "flags": "im"
+    },
+    {
+      "source": "^Objet\\s?:(.+)",
+      "flags": "im"
+    },
+    {
+      "source": "^Predmet\\s?:(.+)",
+      "flags": "im"
+    },
+    {
+      "source": "^Tárgy\\s?:(.+)",
+      "flags": "im"
+    },
+    {
+      "source": "^Oggetto\\s?:(.+)",
+      "flags": "im"
+    },
+    {
+      "source": "^Onderwerp\\s?:(.+)",
+      "flags": "im"
+    },
+    {
+      "source": "^Temat\\s?:(.+)",
+      "flags": "im"
+    },
+    {
+      "source": "^Assunto\\s?:(.+)",
+      "flags": "im"
+    },
+    {
+      "source": "^Subiectul\\s?:(.+)",
+      "flags": "im"
+    },
+    {
+      "source": "^Тема\\s?:(.+)",
+      "flags": "im"
+    },
+    {
+      "source": "^Ämne\\s?:(.+)",
+      "flags": "im"
+    },
+    {
+      "source": "^Konu\\s?:(.+)",
+      "flags": "im"
+    },
+    {
+      "source": "^Sujet\\s?:(.+)",
+      "flags": "im"
+    },
+    {
+      "source": "^Naslov\\s?:(.+)",
+      "flags": "im"
+    },
+    {
+      "source": "^件名：(.+)",
+      "flags": "im"
+    }
+  ],
+  "original_subject_line": [
+    {
+      "source": "(^\\*?Subject\\s?:\\*?(.+))",
+      "flags": "im"
+    },
+    {
+      "source": "(^Předmět\\s?:(.+))",
+      "flags": "im"
+    },
+    {
+      "source": "(^Emne\\s?:(.+))",
+      "flags": "im"
+    },
+    {
+      "source": "(^Betreff\\s?:(.+))",
+      "flags": "im"
+    },
+    {
+      "source": "(^Asunto\\s?:(.+))",
+      "flags": "im"
+    },
+    {
+      "source": "(^Aihe\\s?:(.+))",
+      "flags": "im"
+    },
+    {
+      "source": "(^Objet\\s?:(.+))",
+      "flags": "im"
+    },
+    {
+      "source": "(^Predmet\\s?:(.+))",
+      "flags": "im"
+    },
+    {
+      "source": "(^Tárgy\\s?:(.+))",
+      "flags": "im"
+    },
+    {
+      "source": "(^Oggetto\\s?:(.+))",
+      "flags": "im"
+    },
+    {
+      "source": "(^Onderwerp\\s?:(.+))",
+      "flags": "im"
+    },
+    {
+      "source": "(^Temat\\s?:(.+))",
+      "flags": "im"
+    },
+    {
+      "source": "(^Assunto\\s?:(.+))",
+      "flags": "im"
+    },
+    {
+      "source": "(^Subiectul\\s?:(.+))",
+      "flags": "im"
+    },
+    {
+      "source": "(^Тема\\s?:(.+))",
+      "flags": "im"
+    },
+    {
+      "source": "(^Ämne\\s?:(.+))",
+      "flags": "im"
+    },
+    {
+      "source": "(^Konu\\s?:(.+))",
+      "flags": "im"
+    },
+    {
+      "source": "(^Sujet\\s?:(.+))",
+      "flags": "im"
+    },
+    {
+      "source": "(^Naslov\\s?:(.+))",
+      "flags": "im"
+    },
+    {
+      "source": "(^件名：(.+))",
+      "flags": "im"
+    }
+  ],
+  "original_subject_lax": [
+    {
+      "source": "Subject\\s?:(.+)",
+      "flags": "i"
+    },
+    {
+      "source": "Emne\\s?:(.+)",
+      "flags": "i"
+    },
+    {
+      "source": "Předmět\\s?:(.+)",
+      "flags": "i"
+    },
+    {
+      "source": "Betreff\\s?:(.+)",
+      "flags": "i"
+    },
+    {
+      "source": "Asunto\\s?:(.+)",
+      "flags": "i"
+    },
+    {
+      "source": "Aihe\\s?:(.+)",
+      "flags": "i"
+    },
+    {
+      "source": "Objet\\s?:(.+)",
+      "flags": "i"
+    },
+    {
+      "source": "Tárgy\\s?:(.+)",
+      "flags": "i"
+    },
+    {
+      "source": "Oggetto\\s?:(.+)",
+      "flags": "i"
+    },
+    {
+      "source": "Onderwerp\\s?:(.+)",
+      "flags": "i"
+    },
+    {
+      "source": "Assunto\\s?:?(.+)",
+      "flags": "i"
+    },
+    {
+      "source": "Temat\\s?:(.+)",
+      "flags": "i"
+    },
+    {
+      "source": "Subiect\\s?:(.+)",
+      "flags": "i"
+    },
+    {
+      "source": "Тема\\s?:(.+)",
+      "flags": "i"
+    },
+    {
+      "source": "Predmet\\s?:(.+)",
+      "flags": "i"
+    },
+    {
+      "source": "Ämne\\s?:(.+)",
+      "flags": "i"
+    },
+    {
+      "source": "Konu\\s?:(.+)",
+      "flags": "i"
+    }
+  ],
+  "original_subject_lax_line": [
+    {
+      "source": "(Subject\\s?:(.+))",
+      "flags": "i"
+    },
+    {
+      "source": "(Emne\\s?:(.+))",
+      "flags": "i"
+    },
+    {
+      "source": "(Předmět\\s?:(.+))",
+      "flags": "i"
+    },
+    {
+      "source": "(Betreff\\s?:(.+))",
+      "flags": "i"
+    },
+    {
+      "source": "(Asunto\\s?:(.+))",
+      "flags": "i"
+    },
+    {
+      "source": "(Aihe\\s?:(.+))",
+      "flags": "i"
+    },
+    {
+      "source": "(Objet\\s?:(.+))",
+      "flags": "i"
+    },
+    {
+      "source": "(Tárgy\\s?:(.+))",
+      "flags": "i"
+    },
+    {
+      "source": "(Oggetto\\s?:(.+))",
+      "flags": "i"
+    },
+    {
+      "source": "(Onderwerp\\s?:(.+))",
+      "flags": "i"
+    },
+    {
+      "source": "(Assunto\\s?:?(.+))",
+      "flags": "i"
+    },
+    {
+      "source": "(Temat\\s?:(.+))",
+      "flags": "i"
+    },
+    {
+      "source": "(Subiect\\s?:(.+))",
+      "flags": "i"
+    },
+    {
+      "source": "(Тема\\s?:(.+))",
+      "flags": "i"
+    },
+    {
+      "source": "(Predmet\\s?:(.+))",
+      "flags": "i"
+    },
+    {
+      "source": "(Ämne\\s?:(.+))",
+      "flags": "i"
+    },
+    {
+      "source": "(Konu\\s?:(.+))",
+      "flags": "i"
+    }
+  ],
+  "original_from": [
+    {
+      "source": "^(\\*?\\s*From\\s?:\\*?(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*Od\\s?:(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*Fra\\s?:(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*Von\\s?:(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*De\\s?:(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*Lähettäjä\\s?:(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*Šalje\\s?:(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*Feladó\\s?:(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*Da\\s?:(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*Van\\s?:(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*Expeditorul\\s?:(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*Отправитель\\s?:(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*Från\\s?:(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*Kimden\\s?:(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*Від кого\\s?:(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*Saatja\\s?:(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*De la\\s?:(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*Gönderen\\s?:(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*От\\s?:(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*Від\\s?:(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*Mittente\\s?:(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*Nadawca\\s?:(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*de la\\s?:(.+))$",
+      "flags": "m"
+    },
+    {
+      "source": "^(\\s*送信元：(.+))$",
+      "flags": "m"
+    }
+  ],
+  "original_from_line": [],
+  "original_from_lax": [
+    {
+      "source": "(\\s*From\\s?:(.+?)\\s?\\n?\\s*[\\[|<](.+?)[\\]|>])",
+      "flags": ""
+    },
+    {
+      "source": "(\\s*Od\\s?:(.+?)\\s?\\n?\\s*[\\[|<](.+?)[\\]|>])",
+      "flags": ""
+    },
+    {
+      "source": "(\\s*Fra\\s?:(.+?)\\s?\\n?\\s*[\\[|<](.+?)[\\]|>])",
+      "flags": ""
+    },
+    {
+      "source": "(\\s*Von\\s?:(.+?)\\s?\\n?\\s*[\\[|<](.+?)[\\]|>])",
+      "flags": ""
+    },
+    {
+      "source": "(\\s*De\\s?:(.+?)\\s?\\n?\\s*[\\[|<](.+?)[\\]|>])",
+      "flags": ""
+    },
+    {
+      "source": "(\\s*Lähettäjä\\s?:(.+?)\\s?\\n?\\s*[\\[|<](.+?)[\\]|>])",
+      "flags": ""
+    },
+    {
+      "source": "(\\s*Feladó\\s?:(.+?)\\s?\\n?\\s*[\\[|<](.+?)[\\]|>])",
+      "flags": ""
+    },
+    {
+      "source": "(\\s*Da\\s?:(.+?)\\s?\\n?\\s*[\\[|<](.+?)[\\]|>])",
+      "flags": ""
+    },
+    {
+      "source": "(\\s*Van\\s?:(.+?)\\s?\\n?\\s*[\\[|<](.+?)[\\]|>])",
+      "flags": ""
+    },
+    {
+      "source": "(\\s*De la\\s?:(.+?)\\s?\\n?\\s*[\\[|<](.+?)[\\]|>])",
+      "flags": ""
+    },
+    {
+      "source": "(\\s*От\\s?:(.+?)\\s?\\n?\\s*[\\[|<](.+?)[\\]|>])",
+      "flags": ""
+    },
+    {
+      "source": "(\\s*Från\\s?:(.+?)\\s?\\n?\\s*[\\[|<](.+?)[\\]|>])",
+      "flags": ""
+    },
+    {
+      "source": "(\\s*Kimden\\s?:(.+?)\\s?\\n?\\s*[\\[|<](.+?)[\\]|>])",
+      "flags": ""
+    },
+    {
+      "source": "(\\s*Від\\s?:(.+?)\\s?\\n?\\s*[\\[|<](.+?)[\\]|>])",
+      "flags": ""
+    }
+  ],
+  "original_from_lax_line": [],
+  "original_to": [
+    {
+      "source": "^\\*?\\s*To\\s?:\\*?(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Komu\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Til\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*An\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Para\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Vastaanottaja\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*À\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Prima\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Címzett\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*A\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Aan\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Do\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Destinatarul\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Кому\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Pre\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Till\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Kime\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Pour\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Adresat\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*送信先：(.+)$",
+      "flags": "m"
+    }
+  ],
+  "original_to_line": [
+    {
+      "source": "(^\\*?\\s*To\\s?:\\*?(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Komu\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Til\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*An\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Para\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Vastaanottaja\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*À\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Prima\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Címzett\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*A\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Aan\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Do\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Destinatarul\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Кому\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Pre\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Till\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Kime\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Pour\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Adresat\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*送信先：(.+)$)",
+      "flags": "m"
+    }
+  ],
+  "original_to_lax": [
+    {
+      "source": "\\s*To\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Komu\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Til\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*An\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Para\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Vastaanottaja\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*À\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Címzett\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*A\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Aan\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Do\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Către\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Кому\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Till\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Kime\\s?:(.+)$",
+      "flags": "m"
+    }
+  ],
+  "original_to_lax_line": [],
+  "original_reply_to": [
+    {
+      "source": "^\\s*Reply-To\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Odgovori na\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Odpověď na\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Svar til\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Antwoord aan\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Vastaus\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Répondre à\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Antwort an\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Válaszcím\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Rispondi a\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Svar til\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Odpowiedź-do\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Responder A\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Responder a\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Răspuns către\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Ответ-Кому\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Odpovedať-Pre\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Svara till\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Yanıt Adresi\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Кому відповісти\\s?:(.+)$",
+      "flags": "m"
+    }
+  ],
+  "original_reply_to_line": [
+    {
+      "source": "(^\\s*Reply-To\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Odgovori na\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Odpověď na\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Svar til\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Antwoord aan\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Vastaus\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Répondre à\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Antwort an\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Válaszcím\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Rispondi a\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Svar til\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Odpowiedź-do\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Responder A\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Responder a\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Răspuns către\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Ответ-Кому\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Odpovedať-Pre\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Svara till\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Yanıt Adresi\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Кому відповісти\\s?:(.+)$)",
+      "flags": "m"
+    }
+  ],
+  "original_cc": [
+    {
+      "source": "^\\*?\\s*Cc\\s?:\\*?(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*CC\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Kopie\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Kopio\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Másolat\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Kopi\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Dw\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Копия\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Kopia\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Bilgi\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Копія\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Másolatot kap\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Kópia\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*DW\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Kopie \\(CC\\)\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Copie à\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*CC：(.+)$",
+      "flags": "m"
+    }
+  ],
+  "original_cc_line": [
+    {
+      "source": "(^\\*?\\s*Cc\\s?:\\*?(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*CC\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Kopie\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Kopio\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Másolat\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Kopi\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Dw\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Копия\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Kopia\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Bilgi\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Копія\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Másolatot kap\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Kópia\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*DW\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Kopie \\(CC\\)\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Copie à\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*CC：(.+)$)",
+      "flags": "m"
+    }
+  ],
+  "original_cc_lax": [
+    {
+      "source": "\\s*Cc\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*CC\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Kopie\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Kopio\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Másolat\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Kopi\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Dw\\s?(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Копия\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Kópia\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Kopia\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Копія\\s?:(.+)$",
+      "flags": "m"
+    }
+  ],
+  "original_cc_lax_line": [],
+  "original_date": [
+    {
+      "source": "^\\s*Date\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Datum\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Dato\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Envoyé\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Fecha\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Päivämäärä\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Dátum\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Data\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Dată\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Дата\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Tarih\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\*?\\s*Sent\\s?:\\*?(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*Päiväys\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "^\\s*日付：(.+)$",
+      "flags": "m"
+    }
+  ],
+  "original_date_line": [
+    {
+      "source": "(^\\s*Date\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Datum\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Dato\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Envoyé\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Fecha\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Päivämäärä\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Dátum\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Data\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Dată\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Дата\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Tarih\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\*?\\s*Sent\\s?:\\*?(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*Päiväys\\s?:(.+)$)",
+      "flags": "m"
+    },
+    {
+      "source": "(^\\s*日付：(.+)$)",
+      "flags": "m"
+    }
+  ],
+  "original_date_lax": [
+    {
+      "source": "\\s*Datum\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Sendt\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Gesendet\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Sent\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Enviado\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Envoyé\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Lähetetty\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Elküldve\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Inviato\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Verzonden\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Wysłano\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Trimis\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Отправлено\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Odoslané\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Skickat\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Gönderilen\\s?:(.+)$",
+      "flags": "m"
+    },
+    {
+      "source": "\\s*Відправлено\\s?:(.+)$",
+      "flags": "m"
+    }
+  ],
+  "original_date_lax_line": [],
+  "mailbox": [
+    {
+      "source": "^\\s?\\n?\\s*<.+?<mailto\\:(.+?)>>",
+      "flags": ""
+    },
+    {
+      "source": "^(.+?)\\s?\\n?\\s*<.+?<mailto\\:(.+?)>>",
+      "flags": ""
+    },
+    {
+      "source": "^(.+?)\\s?\\n?\\s*[\\[|<]mailto\\:(.+?)[\\]|>]",
+      "flags": ""
+    },
+    {
+      "source": "^\\'(.+?)\\'\\s?\\n?\\s*[\\[|<](.+?)[\\]|>]",
+      "flags": ""
+    },
+    {
+      "source": "^\\\"\\'(.+?)\\'\\\"\\s?\\n?\\s*[\\[|<](.+?)[\\]|>]",
+      "flags": ""
+    },
+    {
+      "source": "^\\\"(.+?)\\\"\\s?\\n?\\s*[\\[|<](.+?)[\\]|>]",
+      "flags": ""
+    },
+    {
+      "source": "^([^,;]+?)\\s?\\n?\\s*[\\[|<](.+?)[\\]|>]",
+      "flags": ""
+    },
+    {
+      "source": "^(.?)\\s?\\n?\\s*[\\[|<](.+?)[\\]|>]",
+      "flags": ""
+    },
+    {
+      "source": "^([^\\s@]+@[^\\s@]+\\.[^\\s@,]+)",
+      "flags": ""
+    },
+    {
+      "source": "^([^;].+?)\\s?\\n?\\s*[\\[|<](.+?)[\\]|>]",
+      "flags": ""
+    }
+  ],
+  "mailbox_line": [],
+  "mailbox_address": [
+    {
+      "source": "^(([^\\s@]+)@([^\\s@]+)\\.([^\\s@]+))$",
+      "flags": ""
+    }
+  ],
+  "mailbox_address_line": []
+}

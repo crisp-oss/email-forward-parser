@@ -1,0 +1,14 @@
+README.md
+pyproject.toml
+src/email_forward_parser/__init__.py
+src/email_forward_parser/forward_parser.py
+src/email_forward_parser/parser.py
+src/email_forward_parser/regexes.py
+src/email_forward_parser/utils.py
+src/email_forward_parser/data/regexes.json
+src/email_forward_parser_py.egg-info/PKG-INFO
+src/email_forward_parser_py.egg-info/SOURCES.txt
+src/email_forward_parser_py.egg-info/dependency_links.txt
+src/email_forward_parser_py.egg-info/requires.txt
+src/email_forward_parser_py.egg-info/top_level.txt
+tests/test_forward_parser.py

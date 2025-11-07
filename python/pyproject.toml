@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "email-forward-parser-py"
+version = "0.1.0"
+description = "Parses forwarded emails and extracts original content (Python port of crisp-oss/email-forward-parser)."
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [{name = "Crisp"}]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.2"]
+re2 = ["pyre2>=0.3.6"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+[tool.setuptools.package-data]
+"email_forward_parser" = ["data/*.json"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-q"
+testpaths = ["tests"]
