@@ -27,6 +27,22 @@ This library is used at [Crisp](https://crisp.chat/) everyday with around 1 mill
 * Supported clients: Apple Mail, Gmail, Outlook Live / 365, Outlook 2013, Outlook 2019, New Outlook 2019, Yahoo Mail, Thunderbird, Missive, HubSpot, IONOS by 1 & 1, MailMate
 * Supported locales: Croatian, Czech, Danish, Dutch, English, French, Finnish, German, Hungarian, Italian, Japanese, Norwegian, Polish, Portuguese (Brazil), Portuguese (Portugal), Romanian, Russian, Slovak, Spanish, Swedish, Turkish, Ukrainian
 
+## RE2 Support
+
+This library uses the [RE2](https://github.com/uhop/node-re2) regex engine when available for better performance and [ReDoS](https://en.wikipedia.org/wiki/ReDoS) protection. It automatically falls back to native JavaScript `RegExp` if RE2 is unavailable or fails to load.
+
+RE2 is an optional dependency installed by default. If you encounter native compilation issues or want to exclude it:
+
+```bash
+npm uninstall re2
+```
+
+After a Node.js upgrade, you may need to rebuild RE2:
+
+```bash
+npm rebuild re2
+```
+
 ## Usage
 
 ```js

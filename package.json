@@ -29,8 +29,9 @@
     "build": "npx tsc",
     "lint": "eslint .",
     "unit": "node ./node_modules/nodeunit-x/bin/nodeunit test/index.js",
+    "unit:regexp": "EMAIL_FORWARD_PARSER_DISABLE_RE2=1 npm run unit",
     "pretest": "npm run build",
-    "test": "npm run unit && npm run lint"
+    "test": "npm run unit && npm run unit:regexp && npm run lint"
   },
   "keywords": [
     "parser",
@@ -46,11 +47,11 @@
     "eslint-plugin-crisp": "1.4.12",
     "eslint-plugin-jsdoc": "54.1.0",
     "nodeunit-x": "0.15.0",
-    "re2": "1.22.3",
+    "re2": "1.26.0",
     "typescript": "5.9.2"
   },
   "peerDependencies": {
-    "re2": "1.22.3"
+    "re2": "1.26.0"
   },
   "peerDependenciesMeta": {
     "re2": {

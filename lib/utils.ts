@@ -10,16 +10,81 @@
  ***************************************************************************/
 
 // NPM
-import RE2 from "re2";
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+
+import type RE2 from "re2";
+
+/**************************************************************************
+ * INSTANCES
+ ***************************************************************************/
+
+const RE2Engine: typeof RE2 | null = detectRE2();
 
 /**************************************************************************
  * FUNCTIONS
  ***************************************************************************/
 
+/**
+ * Detects whether the RE2 engine is available
+ */
+function detectRE2(): typeof RE2 | null {
+  // Notice: RE2 can be explicitly disabled, to test the RegExp fallback
+  if (process.env.EMAIL_FORWARD_PARSER_DISABLE_RE2) {
+    return null;
+  }
+
+  try {
+    return (require("re2") as typeof RE2);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Builds a safe regular expression (RE2 when available, RegExp otherwise)
+ */
+export function buildSafeRegExp(source: string | RegExp, flags?: string): RegExp {
+  // Important: never pass an undefined 'flags', as RE2 would drop the flags
+  if (RE2Engine !== null) {
+    return (
+      (flags === undefined)
+        ? new RE2Engine(source as string)
+        : new RE2Engine(source as string, flags)
+    );
+  }
+
+  return (
+    (flags === undefined) ? new RegExp(source) : new RegExp(source, flags)
+  );
+}
+
 type LoopRegexesMode = "match" | "split" | "replace";
 type LoopRegexesResult<Mode extends LoopRegexesMode> = (
   Mode extends "replace" ? string : RegExpMatchArray
 );
+
+/**
+ * Executes a regular expression on a string, in the given mode
+ */
+function executeRegex(
+  regex: RegExp, str: string, mode: LoopRegexesMode
+): string | RegExpMatchArray | null {
+  // Notice: call String methods, as they support both RE2 and RegExp
+  switch (mode) {
+    case "replace": {
+      return str.replace(regex, "");
+    }
+
+    case "split": {
+      return (str.split(regex) as RegExpMatchArray);
+    }
+
+    default: {
+      return str.match(regex);
+    }
+  }
+}
 
 /**
  * Executes multiple regular expressions until one succeeds
@@ -37,14 +102,10 @@ export function loopRegexes<Mode extends LoopRegexesMode = "match">(
 
     if (typeof regex === "string") {
       // Build the regex
-      regex = new RE2(regex);
+      regex = buildSafeRegExp(regex);
     }
 
-    const activeMode: LoopRegexesMode = mode;
-
-    const currentMatch = (
-      regex[activeMode](str || "", (mode === "replace") ? "" : undefined)
-    );
+    const currentMatch = executeRegex(regex, (str || ""), mode);
 
     if (mode === "replace") {
       match = currentMatch;
@@ -65,7 +126,10 @@ export function loopRegexes<Mode extends LoopRegexesMode = "match">(
             let higher = false;
 
             if (mode === "match") {
-              higher = (match as RegExpMatchArray).index > currentMatch.index;
+              higher = (
+                (match as RegExpMatchArray).index >
+                  (currentMatch as RegExpMatchArray).index
+              );
             } else if (mode === "split") {
               higher = match[0].length > currentMatch[0].length;
             }

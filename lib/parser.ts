@@ -9,11 +9,13 @@
  * IMPORTS
  ***************************************************************************/
 
-// NPM
-import RE2 from "re2";
-
 // PROJECT: LIB
-import { loopRegexes, reconciliateSplitMatch, trimString } from "./utils.js";
+import {
+  buildSafeRegExp,
+  loopRegexes,
+  reconciliateSplitMatch,
+  trimString
+} from "./utils.js";
 
 /**************************************************************************
  * CONSTANTS
@@ -21,7 +23,7 @@ import { loopRegexes, reconciliateSplitMatch, trimString } from "./utils.js";
 
 const MAILBOXES_SEPARATORS = [
   ",", // Apple Mail, Gmail, New Outlook 2019, Thunderbird
-  ";" // Outlook Live / 365, Yahoo Mail
+  ";"  // Outlook Live / 365, Yahoo Mail
 ];
 
 const LINE_REGEXES = [
@@ -630,7 +632,7 @@ class Parser {
           }
 
           built.push(
-            new RE2(regex)
+            buildSafeRegExp(regex)
           );
         }
 
@@ -647,7 +649,7 @@ class Parser {
           regexesMap[keyLine] = this.buildLineRegex(single);
         }
 
-        regexesMap[key] = new RE2(single);
+        regexesMap[key] = buildSafeRegExp(single);
       }
     }
   }
@@ -665,7 +667,7 @@ class Parser {
     const source = `(${regex.source})`;
     const flags  = regex.flags;
 
-    return new RE2(source, flags);
+    return buildSafeRegExp(source, flags);
   }
 
   /**
