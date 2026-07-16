@@ -29,6 +29,7 @@
     "build": "npx tsc",
     "lint": "eslint .",
     "unit": "node ./node_modules/nodeunit-x/bin/nodeunit test/index.js",
+    "pretest": "npm run build",
     "test": "npm run unit && npm run lint"
   },
   "keywords": [
