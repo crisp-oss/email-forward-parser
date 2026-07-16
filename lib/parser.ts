@@ -1,16 +1,30 @@
-"use strict";
+/*
+ * This file is part of email-forward-parser
+ *
+ * Copyright (c) 2026 Crisp IM SAS
+ * All rights belong to Crisp IM SAS
+ */
 
+/**************************************************************************
+ * IMPORTS
+ ***************************************************************************/
 
-var RE2                                                 = require("re2");
-var { loopRegexes, reconciliateSplitMatch, trimString } = require("./utils");
+// NPM
+import RE2 from "re2";
 
+// PROJECT: LIB
+import { loopRegexes, reconciliateSplitMatch, trimString } from "./utils.js";
 
-var MAILBOXES_SEPARATORS = [
+/**************************************************************************
+ * CONSTANTS
+ ***************************************************************************/
+
+const MAILBOXES_SEPARATORS = [
   ",", // Apple Mail, Gmail, New Outlook 2019, Thunderbird
   ";" // Outlook Live / 365, Yahoo Mail
 ];
 
-var LINE_REGEXES = [
+const LINE_REGEXES = [
   "separator",
   "original_subject",
   "original_subject_lax",
@@ -20,16 +34,17 @@ var LINE_REGEXES = [
   "original_date"
 ];
 
-var REGEXES = {
-  quote_line_break : /^(>+)\s?$/gm, // Apple Mail, Missive
-  quote : /^(>+)\s?/gm, // Apple Mail
-  four_spaces : /^(\ {4})\s?/gm, // Outlook 2019
-  carriage_return : /\r\n/gm, // Outlook 2019
-  byte_order_mark : /\uFEFF/gm, // Outlook 2019
-  trailing_non_breaking_space : /\u00A0$/gm, // IONOS by 1 & 1
-  non_breaking_space : /\u00A0/gm, // HubSpot
+const REGEXES: Record<string, RegExp | RegExp[]> = {
+  /* eslint-disable max-len */
+  quote_line_break: /^(>+)\s?$/gm, // Apple Mail, Missive
+  quote: /^(>+)\s?/gm, // Apple Mail
+  four_spaces: /^(\ {4})\s?/gm, // Outlook 2019
+  carriage_return: /\r\n/gm, // Outlook 2019
+  byte_order_mark: /\uFEFF/gm, // Outlook 2019
+  trailing_non_breaking_space: /\u00A0$/gm, // IONOS by 1 & 1
+  non_breaking_space: /\u00A0/gm, // HubSpot
 
-  subject : [
+  subject: [
     /^Fw:(.*)/m, // Outlook Live / 365 (cs, en, hr, hu, sk), Yahoo Mail (all locales)
     /^VS:(.*)/m, // Outlook Live / 365 (da), New Outlook 2019 (da)
     /^WG:(.*)/m, // Outlook Live / 365 (de), New Outlook 2019 (de)
@@ -48,7 +63,7 @@ var REGEXES = {
     /^Fwd:(.*)/m // Gmail (all locales), Thunderbird (all locales), Missive (en), MailMate (en)
   ],
 
-  separator : [
+  separator: [
     /^>?\s*Begin forwarded message\s?:/m, // Apple Mail (en)
     /^>?\s*Začátek přeposílané zprávy\s?:/m, // Apple Mail (cs)
     /^>?\s*Start på videresendt besked\s?:/m, // Apple Mail (da)
@@ -125,7 +140,7 @@ var REGEXES = {
     /^>?\s*-{10} Original Message -{10}\s*/m // IONOS by 1 & 1 (en)
   ],
 
-  separator_with_information : [
+  separator_with_information: [
     /^\s?Dne\s?(?<date>.+)\,\s?(?<from_name>.+)\s*[\[|<](?<from_address>.+)[\]|>]\s?napsal\(a\)\s?:/m, // Outlook 2019 (cz)
     /^\s?D.\s?(?<date>.+)\s?skrev\s?\"(?<from_name>.+)\"\s*[\[|<](?<from_address>.+)[\]|>]\s?:/m, // Outlook 2019 (da)
     /^\s?Am\s?(?<date>.+)\s?schrieb\s?\"(?<from_name>.+)\"\s*[\[|<](?<from_address>.+)[\]|>]\s?:/m, // Outlook 2019 (de)
@@ -145,7 +160,7 @@ var REGEXES = {
     /^\s?\"(?<from_name>.+)\"\s*[\[|<](?<from_address>.+)[\]|>]\,\s?(?<date>.+)\s?tarihinde şunu yazdı\s?:/m // Outlook 2019 (tr)
   ],
 
-  original_subject : [
+  original_subject: [
     /^\*?Subject\s?:\*?(.+)/im, // Apple Mail (en), Gmail (all locales), Outlook Live / 365 (all locales), New Outlook 2019 (en), Thunderbird (da, en), Missive (en), HubSpot (en)
     /^Předmět\s?:(.+)/im, // Apple Mail (cs), New Outlook 2019 (cs), Thunderbird (cs)
     /^Emne\s?:(.+)/im, // Apple Mail (da, no), New Outlook 2019 (da), Thunderbird (no)
@@ -168,7 +183,7 @@ var REGEXES = {
     /^件名：(.+)/im // HubSpot (ja)
   ],
 
-  original_subject_lax : [
+  original_subject_lax: [
     /Subject\s?:(.+)/i, // Yahoo Mail (en)
     /Emne\s?:(.+)/i, // Yahoo Mail (da, no)
     /Předmět\s?:(.+)/i, // Yahoo Mail (cs)
@@ -188,7 +203,7 @@ var REGEXES = {
     /Konu\s?:(.+)/i // Yahoo Mail (tr)
   ],
 
-  original_from : [
+  original_from: [
     /^(\*?\s*From\s?:\*?(.+))$/m, // Apple Mail (en), Outlook Live / 365 (all locales), New Outlook 2019 (en), Thunderbird (da, en), Missive (en), HubSpot (en)
     /^(\s*Od\s?:(.+))$/m, // Apple Mail (cs, pl, sk), Gmail (cs, pl, sk), New Outlook 2019 (cs, pl, sk), Thunderbird (cs, sk), HubSpot (pl)
     /^(\s*Fra\s?:(.+))$/m, // Apple Mail (da, no), Gmail (da, no), New Outlook 2019 (da), Thunderbird (no)
@@ -215,7 +230,7 @@ var REGEXES = {
     /^(\s*送信元：(.+))$/m // HubSpot (ja)
   ],
 
-  original_from_lax : [
+  original_from_lax: [
     /(\s*From\s?:(.+?)\s?\n?\s*[\[|<](.+?)[\]|>])/, // Yahoo Mail (en)
     /(\s*Od\s?:(.+?)\s?\n?\s*[\[|<](.+?)[\]|>])/, // Yahoo Mail (cs, pl, sk)
     /(\s*Fra\s?:(.+?)\s?\n?\s*[\[|<](.+?)[\]|>])/, // Yahoo Mail (da, no)
@@ -232,7 +247,7 @@ var REGEXES = {
     /(\s*Від\s?:(.+?)\s?\n?\s*[\[|<](.+?)[\]|>])/ // Yahoo Mail (uk)
   ],
 
-  original_to : [
+  original_to: [
     /^\*?\s*To\s?:\*?(.+)$/m, // Apple Mail (en), Gmail (all locales), Outlook Live / 365 (all locales), Thunderbird (da, en), Missive (en), HubSpot (en)
     /^\s*Komu\s?:(.+)$/m, // Apple Mail (cs), New Outlook 2019 (cs, sk), Thunderbird (cs)
     /^\s*Til\s?:(.+)$/m, // Apple Mail (da, no), New Outlook 2019 (da), Thunderbird (no)
@@ -255,7 +270,7 @@ var REGEXES = {
     /^\s*送信先：(.+)$/m // HubSpot (ja)
   ],
 
-  original_to_lax : [
+  original_to_lax: [
     /\s*To\s?:(.+)$/m, // Yahook Mail (en)
     /\s*Komu\s?:(.+)$/m, // Yahook Mail (cs, sk)
     /\s*Til\s?:(.+)$/m, // Yahook Mail (da, no, sv)
@@ -273,7 +288,7 @@ var REGEXES = {
     /\s*Kime\s?:(.+)$/m // Yahook Mail (tr)
   ],
 
-  original_reply_to : [
+  original_reply_to: [
     /^\s*Reply-To\s?:(.+)$/m, // Apple Mail (en)
     /^\s*Odgovori na\s?:(.+)$/m, // Apple Mail (hr)
     /^\s*Odpověď na\s?:(.+)$/m, // Apple Mail (cs)
@@ -296,7 +311,7 @@ var REGEXES = {
     /^\s*Кому відповісти\s?:(.+)$/m // Apple Mail (uk)
   ],
 
-  original_cc : [
+  original_cc: [
     /^\*?\s*Cc\s?:\*?(.+)$/m, // Apple Mail (en, da, es, fr, hr, it, pt, pt-br, ro, sk), Gmail (all locales), Outlook Live / 365 (all locales), New Outlook 2019 (da, de, en, fr, it, pt-br), Missive (en), HubSpot (de, en, es, it, nl, pt-br)
     /^\s*CC\s?:(.+)$/m, // New Outlook 2019 (es, nl, pt), Thunderbird (da, en, es, fi, hr, hu, it, nl, no, pt, pt-br, ro, tr, uk)
     /^\s*Kopie\s?:(.+)$/m, // Apple Mail (cs, de, nl), New Outlook 2019 (cs), Thunderbird (cs)
@@ -316,7 +331,7 @@ var REGEXES = {
     /^\s*CC：(.+)$/m // HubSpot (ja)
   ],
 
-  original_cc_lax : [
+  original_cc_lax: [
     /\s*Cc\s?:(.+)$/m, // Yahoo Mail (da, en, it, nl, pt, pt-br, ro, tr)
     /\s*CC\s?:(.+)$/m, // Yahoo Mail (de, es)
     /\s*Kopie\s?:(.+)$/m, // Yahoo Mail (cs)
@@ -330,7 +345,7 @@ var REGEXES = {
     /\s*Копія\s?:(.+)$/m // Yahoo Mail (uk)
   ],
 
-  original_date : [
+  original_date: [
     /^\s*Date\s?:(.+)$/m, // Apple Mail (en, fr), Gmail (all locales), New Outlook 2019 (en, fr), Thunderbird (da, en, fr), Missive (en), HubSpot (en, fr)
     /^\s*Datum\s?:(.+)$/m, // Apple Mail (cs, de, hr, nl, sv), New Outlook 2019 (cs, de, nl, sv), Thunderbird (cs, de, hr, nl, sv), HubSpot (de, nl, sv)
     /^\s*Dato\s?:(.+)$/m, // Apple Mail (da, no), New Outlook 2019 (da), Thunderbird (no)
@@ -347,7 +362,7 @@ var REGEXES = {
     /^\s*日付：(.+)$/m // HubSpot (ja)
   ],
 
-  original_date_lax : [
+  original_date_lax: [
     /\s*Datum\s?:(.+)$/m, // Yahoo Mail (cs)
     /\s*Sendt\s?:(.+)$/m, // Yahoo Mail (da, no)
     /\s*Gesendet\s?:(.+)$/m, // Yahoo Mail (de)
@@ -367,7 +382,7 @@ var REGEXES = {
     /\s*Відправлено\s?:(.+)$/m // Yahoo Mail (uk)
   ],
 
-  mailbox : [
+  mailbox: [
     /^\s?\n?\s*<.+?<mailto\:(.+?)>>/, // "<walter.sheltan@acme.com<mailto:walter.sheltan@acme.com>>"
     /^(.+?)\s?\n?\s*<.+?<mailto\:(.+?)>>/, // "Walter Sheltan <walter.sheltan@acme.com<mailto:walter.sheltan@acme.com>>"
     /^(.+?)\s?\n?\s*[\[|<]mailto\:(.+?)[\]|>]/, // "Walter Sheltan <mailto:walter.sheltan@acme.com>" or "Walter Sheltan [mailto:walter.sheltan@acme.com]" or "walter.sheltan@acme.com <mailto:walter.sheltan@acme.com>"
@@ -377,100 +392,138 @@ var REGEXES = {
     /^([^,;]+?)\s?\n?\s*[\[|<](.+?)[\]|>]/, // "Walter Sheltan <walter.sheltan@acme.com>" or "Walter Sheltan [walter.sheltan@acme.com]" or "walter.sheltan@acme.com <walter.sheltan@acme.com>"
     /^(.?)\s?\n?\s*[\[|<](.+?)[\]|>]/, // "<walter.sheltan@acme.com>"
     /^([^\s@]+@[^\s@]+\.[^\s@,]+)/, // "walter.sheltan@acme.com"
-    /^([^;].+?)\s?\n?\s*[\[|<](.+?)[\]|>]/, // "Walter, Sheltan <walter.sheltan@acme.com>" or "Walter, Sheltan [walter.sheltan@acme.com]"
+    /^([^;].+?)\s?\n?\s*[\[|<](.+?)[\]|>]/ // "Walter, Sheltan <walter.sheltan@acme.com>" or "Walter, Sheltan [walter.sheltan@acme.com]"
   ],
 
-  mailbox_address : [
+  mailbox_address: [
     /^(([^\s@]+)@([^\s@]+)\.([^\s@]+))$/
   ]
+  /* eslint-enable max-len */
 };
 
+/**************************************************************************
+ * TYPES
+ ***************************************************************************/
+
+interface Regexes {
+  quote_line_break: RegExp;
+  quote: RegExp;
+  four_spaces: RegExp;
+  carriage_return: RegExp;
+  byte_order_mark: RegExp;
+  trailing_non_breaking_space: RegExp;
+  non_breaking_space: RegExp;
+
+  subject: RegExp[];
+  separator: RegExp[];
+  separator_line: RegExp[];
+  separator_with_information: RegExp[];
+  original_subject: RegExp[];
+  original_subject_line: RegExp[];
+  original_subject_lax: RegExp[];
+  original_subject_lax_line: RegExp[];
+  original_from: RegExp[];
+  original_from_lax: RegExp[];
+  original_to: RegExp[];
+  original_to_line: RegExp[];
+  original_to_lax: RegExp[];
+  original_reply_to: RegExp[];
+  original_reply_to_line: RegExp[];
+  original_cc: RegExp[];
+  original_cc_line: RegExp[];
+  original_cc_lax: RegExp[];
+  original_date: RegExp[];
+  original_date_line: RegExp[];
+  original_date_lax: RegExp[];
+  mailbox: RegExp[];
+  mailbox_address: RegExp[];
+}
+
+interface Mailbox {
+  address: string | null;
+  name: string | null;
+}
+
+/**************************************************************************
+ * PARSER
+ ***************************************************************************/
 
 /**
  * Parser
- * @class
  */
 class Parser {
+  private regexes: Regexes;
+
   /**
    * Constructor
    */
   constructor() {
-    this.__regexes = {};
+    this.regexes = {} as Regexes;
 
-    this.__initRegexes();
+    this.initRegexes();
   }
 
   /**
    * Parses the subject part of the email
-   * @public
-   * @param  {string} subject
-   * @return {object} The result
    */
-  parseSubject(subject) {
-    var _match = loopRegexes(this.__regexes.subject, subject);
+  parseSubject(subject: string) {
+    const match = loopRegexes(this.regexes.subject, subject);
 
-    if (_match && _match.length > 1) {
+    if (match?.length > 1) {
       // Notice: return an empty string if the detected subject is empty \
       //   (e.g. 'Fwd: ')
-      return trimString(_match[1]) || "";
+      return trimString(match[1]) || "";
     }
 
     return null;
   }
 
-
   /**
    * Parses the body part of the email
-   * @public
-   * @param  {string}  body
-   * @param  {boolean} [forwarded]
-   * @return {object}  The result
    */
-  parseBody(body, forwarded = false) {
+  parseBody(body: string, forwarded: boolean = false) {
     // Replace carriage return by regular line break
-    var _body = body.replace(this.__regexes.carriage_return, "\n");
+    let cleanBody = body.replace(this.regexes.carriage_return, "\n");
 
     // Remove Byte Order Mark
-    _body = _body.replace(this.__regexes.byte_order_mark, "");
+    cleanBody = cleanBody.replace(this.regexes.byte_order_mark, "");
 
     // Remove trailing Non-breaking space
-    _body = _body.replace(this.__regexes.trailing_non_breaking_space, "");
+    cleanBody = cleanBody.replace(this.regexes.trailing_non_breaking_space, "");
 
     // Replace Non-breaking space with regular space
-    _body = _body.replace(this.__regexes.non_breaking_space, " ");
+    cleanBody = cleanBody.replace(this.regexes.non_breaking_space, " ");
 
     // First method: split via the separator (Apple Mail, Gmail, \
     //   Outlook Live / 365, Outlook 2019, Yahoo Mail, Thunderbird)
     // Notice: use 'line' regex that will capture the line itself, as we may \
     //   need it to build the original email back (in case of nested emails)
-    var _match = loopRegexes(this.__regexes.separator_line, _body, "split");
+    let match = loopRegexes(this.regexes.separator_line, cleanBody, "split");
 
-    if (_match && _match.length > 2) {
+    if (match?.length > 2) {
       // The `split` operation creates a match with 3 substrings:
       //  * 0: anything before the line with the separator (i.e. the message)
       //  * 1: the line with the separator
-      //  * 2: anything after the line with the separator (i.e. the body of \
-      //       the original email)
+      // * 2: anything after the line with the separator (i.e. the body of \
+      //   the original email)
       // Notice: in case of nested emails, there may be several matches \
       //   against 'separator_line'. In that case, the `split` operation \
       //   creates a match with (n x 3) substrings. We need to reconciliate \
       //   those substrings.
-      var _email = reconciliateSplitMatch(
-        _match,
+      const email = reconciliateSplitMatch(
+        match,
 
-        //-[min_substrings]
         3,
 
-        //-[default_substrings]
         // By default, attach anything after the line with the separator
         [2]
       );
 
       return {
-        body    : _body,
+        body: cleanBody,
 
-        message : trimString(_match[0]),
-        email   : trimString(_email)
+        message: trimString(match[0]),
+        email: trimString(email)
       };
     }
 
@@ -482,44 +535,41 @@ class Parser {
     if (forwarded === true) {
       // Second method: split via the From part (New Outlook 2019, \
       //   Outlook Live / 365)
-      _match = loopRegexes(this.__regexes.original_from, _body, "split");
+      match = loopRegexes(this.regexes.original_from, cleanBody, "split");
 
-      if (_match && _match.length > 3) {
+      if (match?.length > 3) {
         // The `split` operation creates a match with 4 substrings:
-        //  * 0: anything before the line with the From part (i.e. the \
-        //       message before the original email)
-        //  * 1: the line with the From part (in the original email)
-        //  * 2: the From part itself
-        //  * 3: anything after the line with the From part (i.e. \
-        //       the rest of the original email)
+        // 0: anything before the line with the From part (i.e. the \
+        //   message before the original email)
+        // 1: the line with the From part (in the original email)
+        // 2: the From part itself
+        // 3: anything after the line with the From part (i.e. \
+        //   the rest of the original email)
         // Notice: in case of nested emails, there may be several matches \
         //   against 'original_from'. In that case, the `split` operation \
         //   creates a match with (n x 4) substrings. We need to reconciliate \
         //   those substrings.
-        var _email = reconciliateSplitMatch(
-          _match,
+        const email = reconciliateSplitMatch(
+          match,
 
-          //-[min_substrings]
           4,
 
-          //-[default_substrings]
           // By default, attach the line that contains the From part back to \
           //   the rest of the original email (exclude the From part itself)
           [1, 3],
 
-          //-[fn_exlude]
           // When reconciliating other substrings, we want to exclude the From \
           //   part itself
-          function(i) {
-            return (i % 3 === 2);
+          (index) => {
+            return (index % 3 === 2);
           }
         );
 
         return {
-          body    : _body,
+          body: cleanBody,
 
-          message : trimString(_match[0]),
-          email   : trimString(_email)
+          message: trimString(match[0]),
+          email: trimString(email)
         };
       }
     }
@@ -527,112 +577,102 @@ class Parser {
     return {};
   }
 
-
   /**
    * Parses the original forwarded email
-   * @public
-   * @param  {string} text
-   * @param  {string} body
-   * @return {object} The parsed email
    */
-  parseOriginalEmail(text, body) {
+  parseOriginalEmail(text: string, body: string) {
     // Remove Byte Order Mark
-    var _text = text.replace(this.__regexes.byte_order_mark, "");
+    let cleanText = text.replace(this.regexes.byte_order_mark, "");
 
     // Remove ">" at the beginning of each line, while keeping line breaks
-    _text = _text.replace(this.__regexes.quote_line_break, "");
+    cleanText = cleanText.replace(this.regexes.quote_line_break, "");
 
     // Remove ">" at the beginning of other lines
-    _text = _text.replace(this.__regexes.quote, "");
+    cleanText = cleanText.replace(this.regexes.quote, "");
 
     // Remove "    " at the beginning of lines
-    _text = _text.replace(this.__regexes.four_spaces, "");
+    cleanText = cleanText.replace(this.regexes.four_spaces, "");
 
     return {
-      body    : this.__parseOriginalBody(_text),
+      body: this.parseOriginalBody(cleanText),
 
-      from    : this.__parseOriginalFrom(_text, body),
-      to      : this.__parseOriginalTo(_text),
-      cc      : this.__parseOriginalCc(_text),
+      from: this.parseOriginalFrom(cleanText, body),
+      to: this.parseOriginalTo(cleanText),
+      cc: this.parseOriginalCc(cleanText),
 
-      subject : this.__parseOriginalSubject(_text),
-      date    : this.__parseOriginalDate(_text, body)
+      subject: this.parseOriginalSubject(cleanText),
+      date: this.parseOriginalDate(cleanText, body)
     };
   }
 
-
   /**
    * Initializes regexes
-   * @private
-   * @return {undefined}
    */
-  __initRegexes() {
-    for (var _key in REGEXES) {
-      var _key_line = `${_key}_line`;
-      var _entry    = REGEXES[_key];
+  private initRegexes() {
+    const regexesMap = this.regexes as unknown as Record<string, RegExp | RegExp[]>;
 
-      if (Array.isArray(_entry)) {
-        this.__regexes[_key]      = [];
-        this.__regexes[_key_line] = [];
+    for (const key in REGEXES) {
+      const keyLine = `${key}_line`;
+      const entry   = REGEXES[key];
 
-        for (var _i = 0; _i < _entry.length; _i++) {
-          var _regex = _entry[_i];
+      if (Array.isArray(entry)) {
+        const built     = [] as RegExp[];
+        const builtLine = [] as RegExp[];
+
+        for (let i = 0; i < entry.length; i++) {
+          const regex = entry[i];
 
           // Build 'line' alternative?
-          if (LINE_REGEXES.includes(_key)) {
-            var _regex_line = this.__buildLineRegex(_regex);
+          if (LINE_REGEXES.includes(key)) {
+            const regexLine = this.buildLineRegex(regex);
 
-            this.__regexes[_key_line].push(_regex_line);
+            builtLine.push(regexLine);
           }
 
-          this.__regexes[_key].push(
-            new RE2(_regex)
+          built.push(
+            new RE2(regex)
           );
         }
+
+        regexesMap[key] = built;
+
+        if (LINE_REGEXES.includes(key)) {
+          regexesMap[keyLine] = builtLine;
+        }
       } else {
-        var _regex = _entry;
+        const single = entry;
 
         // Build 'line' alternative?
-        if (LINE_REGEXES.includes(_key)) {
-          var _regex_line = this.__buildLineRegex(_regex);
-
-          this.__regexes[_key_line] = _regex_line;
+        if (LINE_REGEXES.includes(key)) {
+          regexesMap[keyLine] = this.buildLineRegex(single);
         }
 
-        this.__regexes[_key] = new RE2(_regex);
+        regexesMap[key] = new RE2(single);
       }
     }
   }
 
-
   /**
    * Builds 'line' alternative regex
-   * @private
-   * @param  {object} regex
-   * @return {object} 'Line' regex
    */
-  __buildLineRegex(regex) {
+  private buildLineRegex(regex: RegExp) {
     // A 'line' regex will capture not only inner groups, but also the line \
     //   itself
     // Important: `regex` must be a raw regular expression literal, not an RE2 \
     //   instance. It seems that under some inexplicable circumstances, \
     //   the RE2 instance sometimes doesn't have its `source` and `flags` \
     //   properties correctly populated.
-    var _source = `(${regex.source})`;
-    var _flags  = regex.flags;
+    const source = `(${regex.source})`;
+    const flags  = regex.flags;
 
-    return new RE2(_source, _flags);
+    return new RE2(source, flags);
   }
-
 
   /**
    * Parses the body part
-   * @private
-   * @param  {string} text
-   * @return {string} The parsed body
    */
-  __parseOriginalBody(text) {
-    var _match = null;
+  private parseOriginalBody(text: string) {
+    let match = null;
 
     // First method: extract the text after the Subject part \
     //   (Outlook Live / 365) or after the Cc, To or Reply-To part \
@@ -641,52 +681,49 @@ class Parser {
     // Notice: use 'line' regexes that will capture not only the Subject, Cc, \
     //   To or Reply-To part, but also the line itself, as we may need it \
     //   to build the original body back (in case of nested emails)
-    var _regexes = [
-      this.__regexes.original_subject_line,
-      this.__regexes.original_cc_line,
-      this.__regexes.original_to_line,
-      this.__regexes.original_reply_to_line,
-      this.__regexes.original_date_line
+    const lineRegexes = [
+      this.regexes.original_subject_line,
+      this.regexes.original_cc_line,
+      this.regexes.original_to_line,
+      this.regexes.original_reply_to_line,
+      this.regexes.original_date_line
     ];
 
-    for (var _i = 0; _i < _regexes.length; _i++) {
-      _match = loopRegexes(_regexes[_i], text, "split");
+    for (let i = 0; i < lineRegexes.length; i++) {
+      match = loopRegexes(lineRegexes[i], text, "split");
 
       // A new line must be present between the Cc, To, Reply-To or Subject \
       //   part and the actual body
-      if (_match && _match.length > 2 && _match[3].startsWith("\n\n")) {
+      if (match?.length > 2 && match[3]?.startsWith("\n\n")) {
         // The `split` operation creates a match with 4 substrings:
-        //  * 0: anything before the line with the Subject, Cc, To or Reply-To \
-        //       part
+        // * 0: anything before the line with the Subject, Cc, To or Reply-To \
+        //   part
         //  * 1: the line with the Subject, Cc, To or Reply-To part
         //  * 2: the Subject, Cc, To or Reply-To part itself
-        //  * 3: anything after the line with the Subject, Cc, To or Reply-To \
-        //       part (i.e. the body of the original email)
+        // * 3: anything after the line with the Subject, Cc, To or Reply-To \
+        //   part (i.e. the body of the original email)
         // Notice: in case of nested emails, there may be several matches \
         //   against 'original_subject_line', 'original_cc_line', \
         //   'original_to_line' or 'original_reply_to_line'. In that case, the \
         //   `split` operation creates a match with (n x 4) substrings. We \
         //   need to reconciliate those substrings.
-        var _body = reconciliateSplitMatch(
-          _match,
+        const body = reconciliateSplitMatch(
+          match,
 
-          //-[min_substrings]
           4,
 
-          //-[default_substrings]
           // By default, attach anything after the line with the Subject, Cc, \
           //   To or Reply-To part
           [3],
 
-          //-[fn_exlude]
           // When reconciliating other substrings, we want to exclude the \
           //   Subject, Cc, To or Reply-To part itself
-          function(i) {
-            return (i % 3 === 2);
+          (index) => {
+            return (index % 3 === 2);
           }
         );
 
-        return trimString(_body);
+        return trimString(body);
       }
     }
 
@@ -695,10 +732,10 @@ class Parser {
     // Notice: use 'line' regexes that will capture not only the Subject part, \
     //   but also the line itself, as we may need it to build the original \
     //   body back (in case of nested emails)
-    _match = loopRegexes(
+    match = loopRegexes(
       [].concat(
-        this.__regexes.original_subject_line,
-        this.__regexes.original_subject_lax_line
+        this.regexes.original_subject_line,
+        this.regexes.original_subject_lax_line
       ),
 
       text,
@@ -707,36 +744,33 @@ class Parser {
 
     // Do not bother checking for new line between the Subject part and the \
     //   actual body (specificity of New Outlook 2019 and Yahoo Mail)
-    if (_match && _match.length > 3) {
+    if (match?.length > 3) {
       // The `split` operation creates a match with 4 substrings:
-      //  * 0: anything before the line with the Subject part
-      //  * 1: the line with the Subject part (in the original email)
-      //  * 2: the Subject part itself
-      //  * 3: anything after the line with the Subject part (i.e. the body of \
-      //       the original email)
+      // 0: anything before the line with the Subject part
+      // 1: the line with the Subject part (in the original email)
+      // 2: the Subject part itself
+      // 3: anything after the line with the Subject part (i.e. the body of \
+      //   the original email)
       // Notice: in case of nested emails, there may be several matches \
       //   against 'original_subject_line' and 'original_subject_lax_line'. In \
       //   that case, the `split` operation creates a match with (n x 4) \
       //   substrings. We need to reconciliate those substrings.
-      var _body = reconciliateSplitMatch(
-        _match,
+      const body = reconciliateSplitMatch(
+        match,
 
-        //-[min_substrings]
         4,
 
-        //-[default_substrings]
         // By default, attach anything after the line with the Subject part
         [3],
 
-        //-[fn_exlude]
         // When reconciliating other substrings, we want to exclude the \
         //   Subject part itself
-        function(i) {
-          return (i % 3 === 2);
+        (index) => {
+          return (index % 3 === 2);
         }
       );
 
-      return trimString(_body);
+      return trimString(body);
     }
 
     // Third method: return the raw text, as there is no original information \
@@ -744,364 +778,334 @@ class Parser {
     return text;
   }
 
-
   /**
    * Parses the author (From)
-   * @private
-   * @param  {string} text
-   * @param  {string} body
-   * @return {object} The parsed author
    */
-  __parseOriginalFrom(text, body) {
-    var _address = null;
-    var _name = null;
+  private parseOriginalFrom(text: string, body: string) {
+    let address = null;
+    let name = null;
 
     // First method: extract the author via the From part (Apple Mail, Gmail, \
     //   Outlook Live / 365, New Outlook 2019, Thunderbird)
-    var _author = this.__parseMailbox(this.__regexes.original_from, text);
+    const author = this.parseMailbox(this.regexes.original_from, text);
 
     // Author found?
-    if ((_author || {}).address || (_author || {}).name) {
-      return _author;
+    if (!Array.isArray(author) && (author?.address || author?.name)) {
+      return author;
     }
 
     // Multiple authors found?
-    if (Array.isArray(_author) && (_author[0].address || _author[0].name)) {
-      return _author[0];
+    if (Array.isArray(author) && (author[0]?.address || author[0]?.name)) {
+      return author[0];
     }
 
     // Second method: extract the author via the separator (Outlook 2019)
-    var _match = loopRegexes(this.__regexes.separator_with_information, body);
+    let match = loopRegexes(this.regexes.separator_with_information, body);
 
-    if (_match && _match.length === 4 && _match.groups) {
+    if (match?.length === 4 && match.groups) {
       // Notice: the order of parts may change depending on the localization, \
       //   hence the use of named groups
-      _address = _match.groups.from_address;
-      _name = _match.groups.from_name;
+      address = match.groups.from_address;
+      name = match.groups.from_name;
 
-      return this.__prepareMailbox(
-        _address,
-        _name
+      return this.prepareMailbox(
+        address,
+        name
       );
     }
 
     // Third method: extract the author via the From part, using lax regexes \
     //   (Yahoo Mail)
-    _match = loopRegexes(this.__regexes.original_from_lax, text);
+    match = loopRegexes(this.regexes.original_from_lax, text);
 
-    if (_match && _match.length > 1) {
-      _address = _match[3];
-      _name = _match[2];
+    if (match?.length > 1) {
+      address = match[3];
+      name = match[2];
 
-      return this.__prepareMailbox(
-        _address,
-        _name
+      return this.prepareMailbox(
+        address,
+        name
       );
     }
 
-    return this.__prepareMailbox(
-      _address,
-      _name
+    return this.prepareMailbox(
+      address,
+      name
     );
   }
 
-
   /**
    * Parses the primary recipient(s) (To)
-   * @private
-   * @param  {string} text
-   * @return {object} The parsed primary recipient(s)
    */
-  __parseOriginalTo(text) {
+  private parseOriginalTo(text: string) {
     // First method: extract the primary recipient(s) via the To part \
     //   (Apple Mail, Gmail, Outlook Live / 365, New Outlook 2019, Thunderbird)
-    var _recipients = this.__parseMailbox(
-      this.__regexes.original_to,
+    const recipients = this.parseMailbox(
+      this.regexes.original_to,
 
       text,
-      true  //-[force_array]
+      true
     );
 
     // Recipient(s) found?
-    if (Array.isArray(_recipients) && _recipients.length > 0) {
-      return _recipients;
+    if (Array.isArray(recipients) && recipients.length > 0) {
+      return recipients;
     }
 
     // Second method: the Subject, Date and Cc parts are stuck to the To part, \
     //   remove them before attempting a new extract, using lax regexes \
     //   (Yahoo Mail)
-    var _cleanText = loopRegexes(
-      this.__regexes.original_subject_lax,
+    let cleanText = loopRegexes(
+      this.regexes.original_subject_lax,
       text,
 
       "replace"
     );
 
-    _cleanText = loopRegexes(
-      this.__regexes.original_date_lax,
-      _cleanText,
+    cleanText = loopRegexes(
+      this.regexes.original_date_lax,
+      cleanText,
 
       "replace"
     );
 
-    _cleanText = loopRegexes(
-      this.__regexes.original_cc_lax,
-      _cleanText,
+    cleanText = loopRegexes(
+      this.regexes.original_cc_lax,
+      cleanText,
 
       "replace"
     );
 
-    return this.__parseMailbox(
-      this.__regexes.original_to_lax,
+    return this.parseMailbox(
+      this.regexes.original_to_lax,
 
-      _cleanText,
-      true  //-[force_array]
+      cleanText,
+      true
     );
   }
 
-
   /**
    * Parses the carbon-copy recipient(s) (Cc)
-   * @private
-   * @param  {string} text
-   * @return {object} The parsed carbon-copy recipient(s)
    */
-  __parseOriginalCc(text) {
+  private parseOriginalCc(text: string) {
     // First method: extract the carbon-copy recipient(s) via the Cc part \
     //   (Apple Mail, Gmail, Outlook Live / 365, New Outlook 2019, Thunderbird)
-    var _recipients = this.__parseMailbox(
-      this.__regexes.original_cc,
+    const recipients = this.parseMailbox(
+      this.regexes.original_cc,
 
       text,
-      true  //-[force_array]
+      true
     );
 
     // Recipient(s) found?
-    if (Array.isArray(_recipients) && _recipients.length > 0) {
-      return _recipients;
+    if (Array.isArray(recipients) && recipients.length > 0) {
+      return recipients;
     }
 
     // Second method: the Subject and Date parts are stuck to the To part, \
     //   remove them before attempting a new extract, using lax regexes \
     //   (Yahoo Mail)
-    var _cleanText = loopRegexes(
-      this.__regexes.original_subject_lax,
+    let cleanText = loopRegexes(
+      this.regexes.original_subject_lax,
       text,
 
       "replace"
     );
 
-    _cleanText = loopRegexes(
-      this.__regexes.original_date_lax,
-      _cleanText,
+    cleanText = loopRegexes(
+      this.regexes.original_date_lax,
+      cleanText,
 
       "replace"
     );
 
-    return this.__parseMailbox(
-      this.__regexes.original_cc_lax,
+    return this.parseMailbox(
+      this.regexes.original_cc_lax,
 
-      _cleanText,
-      true  //-[force_array]
+      cleanText,
+      true
     );
   }
 
-
   /**
    * Parses mailboxes(s)
-   * @private
-   * @param  {object}  regexes
-   * @param  {string}  text
-   * @param  {boolean} [force_array]
-   * @return {object}  The parsed mailboxes(s)
    */
-  __parseMailbox(regexes, text, force_array=false) {
-    var _match = loopRegexes(regexes, text);
+  private parseMailbox(
+    regexes: RegExp[],
+    text: string,
+    forceArray: boolean = false
+  ): Mailbox | Mailbox[] | null {
+    const match = loopRegexes(regexes, text);
 
-    if (_match && _match.length > 0) {
-      var _mailboxesLine = trimString(_match[_match.length - 1]);
+    if (match?.length > 0) {
+      let mailboxesLine = trimString(match[match.length - 1]);
 
-      if (_mailboxesLine) {
-        var _mailboxes = [];
+      if (mailboxesLine) {
+        const mailboxes: Mailbox[] = [];
 
-        while (_mailboxesLine) {
-          var _mailboxMatch = loopRegexes(
-            this.__regexes.mailbox,
-            _mailboxesLine
+        while (mailboxesLine) {
+          const mailboxMatch = loopRegexes(
+            this.regexes.mailbox,
+            mailboxesLine
           );
 
           // Address and / or name available?
-          if (_mailboxMatch && _mailboxMatch.length > 0) {
-            var _address = null;
-            var _name = null;
+          if (mailboxMatch?.length > 0) {
+            let address = null;
+            let name = null;
 
             // Address and name available?
-            if (_mailboxMatch.length === 3) {
-              _address = _mailboxMatch[2];
-              _name = _mailboxMatch[1];
+            if (mailboxMatch.length === 3) {
+              address = mailboxMatch[2];
+              name = mailboxMatch[1];
             } else {
-              _address = _mailboxMatch[1];
+              address = mailboxMatch[1];
             }
 
-            _mailboxes.push(
-              this.__prepareMailbox(
-                _address,
-                _name
+            mailboxes.push(
+              this.prepareMailbox(
+                address,
+                name
               )
             );
 
             // Remove matched mailbox from mailboxes line
-            _mailboxesLine = trimString(
-              _mailboxesLine.replace(_mailboxMatch[0], "")
+            mailboxesLine = trimString(
+              mailboxesLine.replace(mailboxMatch[0], "")
             );
 
-            if (_mailboxesLine) {
+            if (mailboxesLine) {
               // Remove leading mailboxes separator \
               //   (", Nicholas <nicholas@globex.corp>")
-              for (var _i = 0; _i < MAILBOXES_SEPARATORS.length; _i++) {
-                var _separator = MAILBOXES_SEPARATORS[_i];
+              for (let i = 0; i < MAILBOXES_SEPARATORS.length; i++) {
+                const separator = MAILBOXES_SEPARATORS[i];
 
-                if (_mailboxesLine[0] === _separator) {
-                  _mailboxesLine = trimString(_mailboxesLine.substring(1));
+                if (mailboxesLine[0] === separator) {
+                  mailboxesLine = trimString(mailboxesLine.substring(1));
 
                   break;
                 }
               }
             }
           } else {
-            _mailboxes.push(
-              this.__prepareMailbox(
-                _mailboxesLine,
+            mailboxes.push(
+              this.prepareMailbox(
+                mailboxesLine,
                 null
               )
             );
 
             // No more matches
-            _mailboxesLine = "";
+            mailboxesLine = "";
           }
         }
 
         // Return multiple mailboxes
-        if (_mailboxes.length > 1) {
-          return _mailboxes;
+        if (mailboxes.length > 1) {
+          return mailboxes;
         }
 
         // Return single mailbox
-        return (force_array === true) ? _mailboxes : _mailboxes[0];
+        return (forceArray === true) ? mailboxes : mailboxes[0];
       }
     }
 
     // No mailbox found
-    return (force_array === true) ? [] : null;
+    return (forceArray === true) ? [] : null;
   }
-
 
   /**
    * Parses the subject part
-   * @private
-   * @param  {string} text
-   * @return {string} The parsed subject
    */
-  __parseOriginalSubject(text) {
+  private parseOriginalSubject(text: string) {
     // First method: extract the subject via the Subject part (Apple Mail, \
     //   Gmail, Outlook Live / 365, New Outlook 2019, Thunderbird)
-    var _match = loopRegexes(this.__regexes.original_subject, text);
+    let match = loopRegexes(this.regexes.original_subject, text);
 
-    if (_match && _match.length > 0) {
-      return trimString(_match[1]);
+    if (match?.length > 0) {
+      return trimString(match[1]);
     }
 
     // Second method: extract the subject via the Subject part, using lax \
     //   regexes (Yahoo Mail)
-    _match = loopRegexes(this.__regexes.original_subject_lax, text);
+    match = loopRegexes(this.regexes.original_subject_lax, text);
 
-    if (_match && _match.length > 0) {
-      return trimString(_match[1]);
+    if (match?.length > 0) {
+      return trimString(match[1]);
     }
 
     return null;
   }
 
-
   /**
    * Parses the date part
-   * @private
-   * @param  {string} text
-   * @param  {string} body
-   * @return {string} The parsed date
    */
-  __parseOriginalDate(text, body) {
+  private parseOriginalDate(text: string, body: string) {
     // First method: extract the date via the Date part (Apple Mail, Gmail, \
     //   Outlook Live / 365, New Outlook 2019, Thunderbird)
-    var _match = loopRegexes(this.__regexes.original_date, text);
+    let match = loopRegexes(this.regexes.original_date, text);
 
-    if (_match && _match.length > 0) {
-      return trimString(_match[1]);
+    if (match?.length > 0) {
+      return trimString(match[1]);
     }
 
     // Second method: extract the date via the separator (Outlook 2019)
-    _match = loopRegexes(this.__regexes.separator_with_information, body);
+    match = loopRegexes(this.regexes.separator_with_information, body);
 
-    if (_match && _match.length === 4 && _match.groups) {
+    if (match?.length === 4 && match.groups) {
       // Notice: the order of parts may change depending on the localization, \
       //   hence the use of named groups
-      return trimString(_match.groups.date);
+      return trimString(match.groups.date);
     }
 
     // Third method: the Subject part is stuck to the Date part, remove it \
     //   before attempting a new extract, using lax regexes (Yahoo Mail)
-    var _cleanText = loopRegexes(
-      this.__regexes.original_subject_lax,
+    const cleanText = loopRegexes(
+      this.regexes.original_subject_lax,
       text,
 
       "replace"
     );
 
-    _match = loopRegexes(this.__regexes.original_date_lax, _cleanText);
+    match = loopRegexes(this.regexes.original_date_lax, cleanText);
 
-    if (_match && _match.length > 0) {
-      return trimString(_match[1]);
+    if (match?.length > 0) {
+      return trimString(match[1]);
     }
 
     return null;
   }
 
-
   /**
    * Prepares mailbox
-   * @private
-   * @param  {string} address
-   * @param  {string} name
-   * @return {string} The prepared mailbox
    */
-  __prepareMailbox(address, name) {
-    var _address = trimString(address);
-    var _name = trimString(name);
+  private prepareMailbox(address: string, name: string): Mailbox {
+    let trimmedAddress = trimString(address);
+    let trimmedName = trimString(name);
 
     // Make sure mailbox address is valid
-    var _mailboxAddressMatch = loopRegexes(
-      this.__regexes.mailbox_address,
-      _address
+    const mailboxAddressMatch = loopRegexes(
+      this.regexes.mailbox_address,
+      trimmedAddress
     );
 
     // Invalid mailbox address? Some clients only include the name
-    if ((_mailboxAddressMatch || []).length === 0) {
-      _name = _address;
-      _address = null;
+    if ((mailboxAddressMatch || []).length === 0) {
+      trimmedName = trimmedAddress;
+      trimmedAddress = null;
     }
 
-    _address = _address || null;
-    _name = _name || null;
+    trimmedAddress = trimmedAddress || null;
+    trimmedName = trimmedName || null;
 
     return {
-      address : _address,
+      address: trimmedAddress,
 
       // Some clients fill the name with the address \
       //   ("bessie.berry@acme.com <bessie.berry@acme.com>")
-      name    : (_address !== _name) ? _name : null
+      name: (trimmedAddress !== trimmedName) ? trimmedName : null
     };
   }
 }
 
-
-module.exports = Parser;
+export default Parser;
