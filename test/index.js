@@ -1,11 +1,17 @@
-"use strict";
-
 /**************************************************************************
  * IMPORTS
  ***************************************************************************/
 
-var fs                 = require("fs");
-var EmailForwardParser = require("../lib/index.js");
+// NPM
+import fs from "fs";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+// PROJECT: LIB
+import EmailForwardParser from "../dist/index.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 /**************************************************************************
  * CONFIGURATION
@@ -106,7 +112,7 @@ function testEmail(
   }
 }
 
-module.exports = {
+export default {
   // Test: common (no message, To, multiple Cc)
   testCommon: function(test) {
     loopTests(
