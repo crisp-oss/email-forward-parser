@@ -192,8 +192,11 @@ const REGEXES: Record<string, RegExp | RegExp[]> = {
     multiline`^>?${HS}*Початок листа, що пересилається\s?:`, // Apple Mail (uk)
     multiline`^${HS}*-{8,10}\s*Forwarded message\s*-{8,10}\s*`, // Gmail (all locales), Missive (en), HubSpot (en)
     multiline`^${HS}*_{32}\s*$`, // Outlook Live / 365 (all locales)
+
     /^\s?Forwarded message:/m, // Mailmate
+
     ...OUTLOOK_2019_SEPARATORS_WITH_INFORMATION.map(withoutGroups), // Outlook 2019 (all locales)
+
     multiline`^${HS}*-{5,8} Přeposlaná zpráva -{5,8}\s*`, // Yahoo Mail (cs), Thunderbird (cs)
     multiline`^${HS}*-{5,8} Videresendt meddelelse -{5,8}\s*`, // Yahoo Mail (da), Thunderbird (da)
     multiline`^${HS}*-{5,10} Weitergeleitete Nachricht -{5,10}\s*`, // Yahoo Mail (de), Thunderbird (de), HubSpot (de)
@@ -460,8 +463,10 @@ const REGEXES: Record<string, RegExp | RegExp[]> = {
     regex()`^"'(${upTo(`'"\\s*${OPEN}`, "+")})'"\s*${OPEN}(.${upTo(CLOSE)})${CLOSE}`, // ""'Walter Sheltan'" <walter.sheltan@acme.com>" or ""'Walter Sheltan'" [walter.sheltan@acme.com]" or ""'walter.sheltan@acme.com'" <walter.sheltan@acme.com>"
     regex()`^"(${upTo(`"\\s*${OPEN}`, "+")})"\s*${OPEN}(.${upTo(CLOSE)})${CLOSE}`, // ""Walter Sheltan" <walter.sheltan@acme.com>" or ""Walter Sheltan" [walter.sheltan@acme.com]" or ""walter.sheltan@acme.com" <walter.sheltan@acme.com>"
     regex()`^([^,;]${lazyWords("[^,;\\s\\[|<]", "\\s")})\s*${OPEN}(.${upTo(CLOSE)})${CLOSE}`, // "Walter Sheltan <walter.sheltan@acme.com>" or "Walter Sheltan [walter.sheltan@acme.com]" or "walter.sheltan@acme.com <walter.sheltan@acme.com>"
+
     /^(.?)\s?\n?\s*[\[|<](.+?)[\]|>]/, // "<walter.sheltan@acme.com>"
     /^([^\s@]+@[^\s@]+\.[^\s@,]+)/, // "walter.sheltan@acme.com"
+
     regex()`^([^;].${lazyWords("[^\\s\\[|<]")})\s*${OPEN}(.${upTo(CLOSE)})${CLOSE}` // "Walter, Sheltan <walter.sheltan@acme.com>" or "Walter, Sheltan [walter.sheltan@acme.com]"
   ],
 
