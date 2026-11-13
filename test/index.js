@@ -4,11 +4,13 @@
 
 // NPM
 import fs from "fs";
+import vm from "vm";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
 // PROJECT: LIB
 import EmailForwardParser from "../dist/index.js";
+import Parser from "../dist/parser.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -35,6 +37,59 @@ const CC_ADDRESS_2 = "nicholas@globex.corp";
 const CC_NAME_2 = "Nicholas";
 
 const parser = new EmailForwardParser();
+
+// One Outlook 2019 separator per locale, as found in fixtures
+const OUTLOOK_2019_SEPARATORS = [
+  "Dne 28/10/2021 12:46, John Doe <john.doe@acme.com> napsal(a):",
+  "D. 28/10/2021 12.46 skrev \"John Doe\" <john.doe@acme.com>:",
+  "Am 28/10/2021, 12:46 schrieb \"John Doe\" <john.doe@acme.com>:",
+  "On 28/10/2021 12:46, \"John Doe\" <john.doe@acme.com> wrote:",
+  "El 28/10/2021 12:46, \"John Doe\" <john.doe@acme.com> escribió:",
+  "Le 28/10/2021 12:46, « John Doe » <john.doe@acme.com> a écrit :",
+  "John Doe <john.doe@acme.com> kirjoitti 28/10/2021 12.46:",
+  "28/10/2021 12:46 időpontban John Doe (john.doe@acme.com) ezt írta:",
+  "Il giorno 28/10/2021, 12:46 \"John Doe\" <john.doe@acme.com> ha scritto:",
+  "Op 28/10/2021 12:46 heeft John Doe <john.doe@acme.com> geschreven:",
+  "John Doe <john.doe@acme.com> skrev følgende den 28/10/2021, 12:46:",
+  "Dnia 28/10/2021, 12:46 użytkownik „John Doe” <john.doe@acme.com> napisał:",
+  "Em 28/10/21, 12:46, \"John Doe\" <john.doe@acme.com> escreveu:",
+  "28/10/2021, 12:46 пользователь \"John Doe\" <john.doe@acme.com> написал:",
+  "28/10/2021 12:46 používateľ John Doe (<john.doe@acme.com>) napísal:",
+  "Den 28/10/2021 12:46 skrev \"John Doe\" <john.doe@acme.com> följande:",
+  "\"John Doe\" <john.doe@acme.com>, 28/10/2021 12:46 tarihinde şunu yazdı:"
+];
+
+// Inputs that open a header and never complete it, repeated on one line and on many lines
+function hostileInputs() {
+  const units = new Set([
+    "\n", " \n", "\n\n", " ", "\r", "\u2028", "x ", "<", "< ", "[", "|", "(", "\"", "\" <", "'", "'<", ",",
+    ": ", "@.", "-", "_", "> ", "<mailto:", "x<mailto:x", "From: ", "From: x <x ", "Od: x <x ",
+    "To: ", "Subject: ", "Date: ", "Begin forwarded message", "---------- Forwarded message"
+  ]);
+
+  OUTLOOK_2019_SEPARATORS.forEach((separator) => {
+    const words = separator.split(" ");
+
+    [separator.slice(0, -1), separator.slice(0, -1) + "\n", separator.replace(/ /g, "\n")].forEach((unit) => {
+      units.add(unit);
+    });
+
+    // Repeating the middle of a separator makes every keyword a candidate split
+    for (let i = 0; i < words.length - 2; i++) {
+      units.add(words.slice(i, i + 3).join(" ") + " ");
+    }
+  });
+
+  return [...units].map((unit) => unit.repeat(Math.ceil(20000 / unit.length)));
+}
+
+function elapsed(run) {
+  const start = performance.now();
+
+  run();
+
+  return performance.now() - start;
+}
 
 /**************************************************************************
  * TESTS
@@ -797,6 +852,69 @@ export default {
         test.strictEqual(result.email.body, body);
       }
     );
+
+    test.done();
+  },
+
+  // Test: patterns stay linear on hostile input (ReDoS)
+  testPatternsStayLinearOnHostileInput: function(test) {
+    // Linear patterns take a few ms on these inputs; backtracking ones take seconds or never end
+    const inputs = hostileInputs();
+    const context = vm.createContext({ inputs, performance });
+    const regexes = Object.values(new Parser().regexes).flat();
+
+    regexes.forEach((regex) => {
+      Object.assign(context, { source: regex.source, flags: regex.flags });
+
+      // The vm timeout interrupts a regex stuck in backtracking, so the test fails instead of hanging
+      const measure = () => {
+        try {
+          return vm.runInContext(`(() => {
+            const regex = new RegExp(source, flags);
+
+            return Math.max(...inputs.map((text) => {
+              const start = performance.now();
+
+              text.split(regex);
+              text.match(regex);
+
+              return performance.now() - start;
+            }));
+          })()`, context, { timeout: 5000 });
+        } catch {
+          return Infinity;
+        }
+      };
+
+      // Retry slow runs to ignore CPU hiccups; a backtracking pattern stays slow every time
+      let duration = measure();
+
+      for (let attempt = 0; attempt < 2 && duration >= 100 && duration !== Infinity; attempt++) {
+        duration = Math.min(duration, measure());
+      }
+
+      test.ok(duration < 100, `${duration.toFixed(0)}ms for ${regex.source}`);
+    });
+
+    test.done();
+  },
+
+  // Test: parser stays linear on hostile email (ReDoS)
+  testParserStaysLinearOnHostileEmail: function(test) {
+    hostileInputs().forEach((text) => {
+      const emails = [
+        ["Hello\n" + text, null],
+        ["Hello\n" + text, "Fwd: Hello"],
+        ["Hello\n\nBegin forwarded message:\n\n" + text, null],
+        ["Hello\n\n---------- Forwarded message ---------\nFrom: John <john@acme.com>\n" + text, null]
+      ];
+
+      emails.forEach(([body, subject]) => {
+        const duration = elapsed(() => parser.read(body, subject));
+
+        test.ok(duration < 1000, `${duration.toFixed(0)}ms on ${JSON.stringify(text.slice(0, 40))}`);
+      });
+    });
 
     test.done();
   }

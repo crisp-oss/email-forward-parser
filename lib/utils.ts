@@ -6,58 +6,8 @@
  */
 
 /**************************************************************************
- * IMPORTS
- ***************************************************************************/
-
-// NPM
-import { createRequire } from "module";
-const require = createRequire(import.meta.url);
-
-import type RE2 from "re2";
-
-/**************************************************************************
- * INSTANCES
- ***************************************************************************/
-
-const RE2Engine: typeof RE2 | null = detectRE2();
-
-/**************************************************************************
  * FUNCTIONS
  ***************************************************************************/
-
-/**
- * Detects whether the RE2 engine is available
- */
-function detectRE2(): typeof RE2 | null {
-  // Notice: RE2 can be explicitly disabled, to test the RegExp fallback
-  if (process.env.EMAIL_FORWARD_PARSER_DISABLE_RE2) {
-    return null;
-  }
-
-  try {
-    return (require("re2") as typeof RE2);
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Builds a safe regular expression (RE2 when available, RegExp otherwise)
- */
-export function buildSafeRegExp(source: string | RegExp, flags?: string): RegExp {
-  // Important: never pass an undefined 'flags', as RE2 would drop the flags
-  if (RE2Engine !== null) {
-    return (
-      (flags === undefined)
-        ? new RE2Engine(source as string)
-        : new RE2Engine(source as string, flags)
-    );
-  }
-
-  return (
-    (flags === undefined) ? new RegExp(source) : new RegExp(source, flags)
-  );
-}
 
 type LoopRegexesMode = "match" | "split" | "replace";
 type LoopRegexesResult<Mode extends LoopRegexesMode> = (
@@ -70,7 +20,6 @@ type LoopRegexesResult<Mode extends LoopRegexesMode> = (
 function executeRegex(
   regex: RegExp, str: string, mode: LoopRegexesMode
 ): string | RegExpMatchArray | null {
-  // Notice: call String methods, as they support both RE2 and RegExp
   switch (mode) {
     case "replace": {
       return str.replace(regex, "");
@@ -102,7 +51,7 @@ export function loopRegexes<Mode extends LoopRegexesMode = "match">(
 
     if (typeof regex === "string") {
       // Build the regex
-      regex = buildSafeRegExp(regex);
+      regex = new RegExp(regex);
     }
 
     const currentMatch = executeRegex(regex, (str || ""), mode);

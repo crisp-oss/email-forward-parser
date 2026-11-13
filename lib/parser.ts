@@ -11,7 +11,6 @@
 
 // PROJECT: LIB
 import {
-  buildSafeRegExp,
   loopRegexes,
   reconciliateSplitMatch,
   trimString
@@ -20,6 +19,18 @@ import {
 /**************************************************************************
  * CONSTANTS
  ***************************************************************************/
+
+// Patterns must stay linear on backtracking engines: no nested or adjacent unbounded quantifiers
+
+// Line terminators, and whitespace that is not a line terminator
+const NEWLINES = "\\n\\r\\u2028\\u2029";
+const HS = `[^\\S${NEWLINES}]`;
+
+// Mailbox brackets (Outlook 2019, Yahoo Mail)
+const OPEN = "[\\[|<]";
+const CLOSE = "[\\]|>]";
+const HU_OPEN = "[\\[|<|(]";
+const HU_CLOSE = "[\\]|>|)]";
 
 const MAILBOXES_SEPARATORS = [
   ",", // Apple Mail, Gmail, New Outlook 2019, Thunderbird
@@ -36,8 +47,99 @@ const LINE_REGEXES = [
   "original_date"
 ];
 
+/**************************************************************************
+ * HELPERS
+ ***************************************************************************/
+
+/**
+ * Builds a regex from a raw template, so that patterns read like literals
+ */
+function regex(flags = "") {
+  return (strings: TemplateStringsArray, ...values: string[]): RegExp => {
+    return new RegExp(String.raw(strings, ...values), flags);
+  };
+}
+
+const multiline = regex("m");
+
+/**
+ * Any characters up to the first STOP on the line (a single way to split, so no backtracking)
+ */
+function upTo(stop: string, quantifier = "*"): string {
+  return `(?:(?!${stop}).)${quantifier}`;
+}
+
+/**
+ * Lazily, characters matching CHAR or whole whitespace runs (never split, so never retried)
+ */
+function lazyWords(char: string, whitespace = HS): string {
+  return `(?:${char}|${whitespace}+(?=\\S))*?`;
+}
+
+/**
+ * Bracketed mailbox address, that cannot span over the next place an address could START
+ */
+function bracketAddress(start = OPEN): string {
+  return upTo(start, "+");
+}
+
+/**
+ * Unquoted sender name, that cannot span over STOP and ends before whitespace (or is blank)
+ */
+function bareName(stop: string | null = null): string {
+  if (stop === null) {
+    return `(?:.*\\S|${HS}+(?=\\S))`;
+  }
+
+  return `(?:${upTo(stop)}(?!${stop})\\S|${HS}+(?=\\S))`;
+}
+
+/**
+ * Yahoo Mail "KEYWORD: NAME <EMAIL>" header, where NAME and EMAIL cannot span over KEYWORD
+ */
+function laxFromHeader(keyword: string): RegExp {
+  const name = `.${lazyWords(`(?!${keyword}\\s?:)[^\\s\\[|<]`)}`;
+  const address = `.${upTo(`${CLOSE}|${keyword}\\s?:`)}`;
+
+  return new RegExp(`(?<!\\s)(\\s*${keyword}\\s?:(${name})\\s*${OPEN}(${address})${CLOSE})`);
+}
+
+/**
+ * Removes named capture groups, to detect a separator without extracting its information
+ */
+function withoutGroups(pattern: RegExp): RegExp {
+  return new RegExp(pattern.source.replace(/\(\?<\w+>/g, "(?:"), pattern.flags);
+}
+
+/* eslint-disable max-len */
+/**************************************************************************
+ * CONSTANTS
+ ***************************************************************************/
+
+const ADDRESS = bracketAddress();
+const QUOTED_ADDRESS = bracketAddress(`"\\s*${OPEN}`);
+
+const OUTLOOK_2019_SEPARATORS_WITH_INFORMATION: RegExp[] = [
+  multiline`^\s?Dne\s?(?<date>.+)\,\s?(?<from_name>${bareName(",")})\s*${OPEN}(?<from_address>${ADDRESS})${CLOSE}\s?napsal\(a\)\s?:`, // Outlook 2019 (cz)
+  multiline`^\s?D.\s?(?<date>.+)\s?skrev\s?\"(?<from_name>${upTo("skrev\\s?\"", "+")})\"\s*${OPEN}(?<from_address>${QUOTED_ADDRESS})${CLOSE}\s?:`, // Outlook 2019 (da)
+  multiline`^\s?Am\s?(?<date>.+)\s?schrieb\s?\"(?<from_name>${upTo("schrieb\\s?\"", "+")})\"\s*${OPEN}(?<from_address>${QUOTED_ADDRESS})${CLOSE}\s?:`, // Outlook 2019 (de)
+  multiline`^\s?On\s?(?<date>.+)\,\s?\"(?<from_name>${upTo(",\\s?\"", "+")})\"\s*${OPEN}(?<from_address>${QUOTED_ADDRESS})${CLOSE}\s?wrote\s?:`, // Outlook 2019 (en)
+  multiline`^\s?El\s?(?<date>.+)\,\s?\"(?<from_name>${upTo(",\\s?\"", "+")})\"\s*${OPEN}(?<from_address>${QUOTED_ADDRESS})${CLOSE}\s?escribió\s?:`, // Outlook 2019 (es)
+  multiline`^\s?Le\s?(?<date>.+)\,\s?«(?<from_name>${upTo(",\\s?«", "+")})»\s*${OPEN}(?<from_address>${bracketAddress(`»\\s*${OPEN}`)})${CLOSE}\s?a écrit\s?:`, // Outlook 2019 (fr)
+  multiline`^\s?(?<from_name>${bareName()})\s*${OPEN}(?<from_address>${ADDRESS})${CLOSE}\s?kirjoitti\s?(?<date>${upTo(`${CLOSE}\\s?kirjoitti`, "+")})\s?:`, // Outlook 2019 (fi)
+  multiline`^\s?(?<date>.+)\s?időpontban\s?(?<from_name>${bareName("időpontban")})\s*${HU_OPEN}(?<from_address>${bracketAddress(HU_OPEN)})${HU_CLOSE}\s?ezt írta\s?:`, // Outlook 2019 (hu)
+  multiline`^\s?Il giorno\s?(?<date>.+)\s?\"(?<from_name>${upTo("\"", "+")})\"\s*${OPEN}(?<from_address>${QUOTED_ADDRESS})${CLOSE}\s?ha scritto\s?:`, // Outlook 2019 (it)
+  multiline`^\s?Op\s?(?<date>.+)\s?heeft\s?(?<from_name>${bareName("heeft")})\s*${OPEN}(?<from_address>${ADDRESS})${CLOSE}\s?geschreven\s?:`, // Outlook 2019 (nl)
+  multiline`^\s?(?<from_name>${bareName()})\s*${OPEN}(?<from_address>${ADDRESS})${CLOSE}\s?skrev følgende den\s?(?<date>${upTo(`${CLOSE}\\s?skrev følgende den`, "+")})\s?:`, // Outlook 2019 (no)
+  multiline`^\s?Dnia\s?(?<date>.+)\s?„(?<from_name>${upTo("„", "+")})”\s*${OPEN}(?<from_address>${bracketAddress(`”\\s*${OPEN}`)})${CLOSE}\s?napisał\s?:`, // Outlook 2019 (pl)
+  multiline`^\s?Em\s?(?<date>.+)\,\s?\"(?<from_name>${upTo(",\\s?\"", "+")})\"\s*${OPEN}(?<from_address>${QUOTED_ADDRESS})${CLOSE}\s?escreveu\s?:`, // Outlook 2019 (pt)
+  multiline`^\s?(?<date>.+)\s?пользователь\s?\"(?<from_name>${upTo("пользователь\\s?\"", "+")})\"\s*${OPEN}(?<from_address>${QUOTED_ADDRESS})${CLOSE}\s?написал\s?:`, // Outlook 2019 (ru)
+  multiline`^\s?(?<date>.+)\s?používateľ\s?(?<from_name>${bareName("používateľ")})\s*\(${OPEN}(?<from_address>${bracketAddress(`\\(${OPEN}`)})${CLOSE}\)\s?napísal\s?:`, // Outlook 2019 (sk)
+  multiline`^\s?Den\s?(?<date>.+)\s?skrev\s?\"(?<from_name>${upTo("skrev\\s?\"", "+")})\"\s*${OPEN}(?<from_address>${QUOTED_ADDRESS})${CLOSE}\s?följande\s?:`, // Outlook 2019 (sv)
+  multiline`^\s?\"(?<from_name>.+)\"\s*${OPEN}(?<from_address>${QUOTED_ADDRESS})${CLOSE}\,\s?(?<date>${upTo(`${CLOSE},`, "+")})\s?tarihinde şunu yazdı\s?:` // Outlook 2019 (tr)
+];
+
 const REGEXES: Record<string, RegExp | RegExp[]> = {
-  /* eslint-disable max-len */
   quote_line_break: /^(>+)\s?$/gm, // Apple Mail, Missive
   quote: /^(>+)\s?/gm, // Apple Mail
   four_spaces: /^(\ {4})\s?/gm, // Outlook 2019
@@ -66,101 +168,67 @@ const REGEXES: Record<string, RegExp | RegExp[]> = {
   ],
 
   separator: [
-    /^>?\s*Begin forwarded message\s?:/m, // Apple Mail (en)
-    /^>?\s*Začátek přeposílané zprávy\s?:/m, // Apple Mail (cs)
-    /^>?\s*Start på videresendt besked\s?:/m, // Apple Mail (da)
-    /^>?\s*Anfang der weitergeleiteten Nachricht\s?:/m, // Apple Mail (de)
-    /^>?\s*Inicio del mensaje reenviado\s?:/m, // Apple Mail (es)
-    /^>?\s*Välitetty viesti alkaa\s?:/m, // Apple Mail (fi)
-    /^>?\s*Début du message réexpédié\s?:/m, // Apple Mail (fr)
-    /^>?\s*Début du message transféré\s?:/m, // Apple Mail iOS (fr)
-    /^>?\s*Započni proslijeđenu poruku\s?:/m, // Apple Mail (hr)
-    /^>?\s*Továbbított levél kezdete\s?:/m, // Apple Mail (hu)
-    /^>?\s*Inizio messaggio inoltrato\s?:/m, // Apple Mail (it)
-    /^>?\s*Begin doorgestuurd bericht\s?:/m, // Apple Mail (nl)
-    /^>?\s*Videresendt melding\s?:/m, // Apple Mail (no)
-    /^>?\s*Początek przekazywanej wiadomości\s?:/m, // Apple Mail (pl)
-    /^>?\s*Início da mensagem reencaminhada\s?:/m, // Apple Mail (pt)
-    /^>?\s*Início da mensagem encaminhada\s?:/m, // Apple Mail (pt-br)
-    /^>?\s*Începe mesajul redirecționat\s?:/m, // Apple Mail (ro)
-    /^>?\s*Начало переадресованного сообщения\s?:/m, // Apple Mail (ro)
-    /^>?\s*Začiatok preposlanej správy\s?:/m, // Apple Mail (sk)
-    /^>?\s*Vidarebefordrat mejl\s?:/m, // Apple Mail (sv)
-    /^>?\s*İleti başlangıcı\s?:/m, // Apple Mail (tr)
-    /^>?\s*Початок листа, що пересилається\s?:/m, // Apple Mail (uk)
-    /^\s*-{8,10}\s*Forwarded message\s*-{8,10}\s*/m, // Gmail (all locales), Missive (en), HubSpot (en)
-    /^\s*_{32}\s*$/m, // Outlook Live / 365 (all locales)
+    multiline`^>?${HS}*Begin forwarded message\s?:`, // Apple Mail (en)
+    multiline`^>?${HS}*Začátek přeposílané zprávy\s?:`, // Apple Mail (cs)
+    multiline`^>?${HS}*Start på videresendt besked\s?:`, // Apple Mail (da)
+    multiline`^>?${HS}*Anfang der weitergeleiteten Nachricht\s?:`, // Apple Mail (de)
+    multiline`^>?${HS}*Inicio del mensaje reenviado\s?:`, // Apple Mail (es)
+    multiline`^>?${HS}*Välitetty viesti alkaa\s?:`, // Apple Mail (fi)
+    multiline`^>?${HS}*Début du message réexpédié\s?:`, // Apple Mail (fr)
+    multiline`^>?${HS}*Début du message transféré\s?:`, // Apple Mail iOS (fr)
+    multiline`^>?${HS}*Započni proslijeđenu poruku\s?:`, // Apple Mail (hr)
+    multiline`^>?${HS}*Továbbított levél kezdete\s?:`, // Apple Mail (hu)
+    multiline`^>?${HS}*Inizio messaggio inoltrato\s?:`, // Apple Mail (it)
+    multiline`^>?${HS}*Begin doorgestuurd bericht\s?:`, // Apple Mail (nl)
+    multiline`^>?${HS}*Videresendt melding\s?:`, // Apple Mail (no)
+    multiline`^>?${HS}*Początek przekazywanej wiadomości\s?:`, // Apple Mail (pl)
+    multiline`^>?${HS}*Início da mensagem reencaminhada\s?:`, // Apple Mail (pt)
+    multiline`^>?${HS}*Início da mensagem encaminhada\s?:`, // Apple Mail (pt-br)
+    multiline`^>?${HS}*Începe mesajul redirecționat\s?:`, // Apple Mail (ro)
+    multiline`^>?${HS}*Начало переадресованного сообщения\s?:`, // Apple Mail (ro)
+    multiline`^>?${HS}*Začiatok preposlanej správy\s?:`, // Apple Mail (sk)
+    multiline`^>?${HS}*Vidarebefordrat mejl\s?:`, // Apple Mail (sv)
+    multiline`^>?${HS}*İleti başlangıcı\s?:`, // Apple Mail (tr)
+    multiline`^>?${HS}*Початок листа, що пересилається\s?:`, // Apple Mail (uk)
+    multiline`^${HS}*-{8,10}\s*Forwarded message\s*-{8,10}\s*`, // Gmail (all locales), Missive (en), HubSpot (en)
+    multiline`^${HS}*_{32}\s*$`, // Outlook Live / 365 (all locales)
     /^\s?Forwarded message:/m, // Mailmate
-    /^\s?Dne\s?.+\,\s?.+\s*[\[|<].+[\]|>]\s?napsal\(a\)\s?:/m, // Outlook 2019 (cz)
-    /^\s?D.\s?.+\s?skrev\s?\".+\"\s*[\[|<].+[\]|>]\s?:/m, // Outlook 2019 (da)
-    /^\s?Am\s?.+\s?schrieb\s?\".+\"\s*[\[|<].+[\]|>]\s?:/m, // Outlook 2019 (de)
-    /^\s?On\s?.+\,\s?\".+\"\s*[\[|<].+[\]|>]\s?wrote\s?:/m, // Outlook 2019 (en)
-    /^\s?El\s?.+\,\s?\".+\"\s*[\[|<].+[\]|>]\s?escribió\s?:/m, // Outlook 2019 (es)
-    /^\s?Le\s?.+\,\s?«.+»\s*[\[|<].+[\]|>]\s?a écrit\s?:/m, // Outlook 2019 (fr)
-    /^\s?.+\s*[\[|<].+[\]|>]\s?kirjoitti\s?.+\s?:/m, // Outlook 2019 (fi)
-    /^\s?.+\s?időpontban\s?.+\s*[\[|<|(].+[\]|>|)]\s?ezt írta\s?:/m, // Outlook 2019 (hu)
-    /^\s?Il giorno\s?.+\s?\".+\"\s*[\[|<].+[\]|>]\s?ha scritto\s?:/m, // Outlook 2019 (it)
-    /^\s?Op\s?.+\s?heeft\s?.+\s*[\[|<].+[\]|>]\s?geschreven\s?:/m, // Outlook 2019 (nl)
-    /^\s?.+\s*[\[|<].+[\]|>]\s?skrev følgende den\s?.+\s?:/m, // Outlook 2019 (no)
-    /^\s?Dnia\s?.+\s?„.+”\s*[\[|<].+[\]|>]\s?napisał\s?:/m, // Outlook 2019 (pl)
-    /^\s?Em\s?.+\,\s?\".+\"\s*[\[|<].+[\]|>]\s?escreveu\s?:/m, // Outlook 2019 (pt)
-    /^\s?.+\s?пользователь\s?\".+\"\s*[\[|<].+[\]|>]\s?написал\s?:/m, // Outlook 2019 (ru)
-    /^\s?.+\s?používateľ\s?.+\s*\([\[|<].+[\]|>]\)\s?napísal\s?:/m, // Outlook 2019 (sk)
-    /^\s?Den\s?.+\s?skrev\s?\".+\"\s*[\[|<].+[\]|>]\s?följande\s?:/m, // Outlook 2019 (sv)
-    /^\s?\".+\"\s*[\[|<].+[\]|>]\,\s?.+\s?tarihinde şunu yazdı\s?:/m, // Outlook 2019 (tr)
-    /^\s*-{5,8} Přeposlaná zpráva -{5,8}\s*/m, // Yahoo Mail (cs), Thunderbird (cs)
-    /^\s*-{5,8} Videresendt meddelelse -{5,8}\s*/m, // Yahoo Mail (da), Thunderbird (da)
-    /^\s*-{5,10} Weitergeleitete Nachricht -{5,10}\s*/m, // Yahoo Mail (de), Thunderbird (de), HubSpot (de)
-    /^\s*-{5,8} Forwarded Message -{5,8}\s*/m, // Yahoo Mail (en), Thunderbird (en)
-    /^\s*-{5,10} Mensaje reenviado -{5,10}\s*/m, // Yahoo Mail (es), Thunderbird (es), HubSpot (es)
-    /^\s*-{5,10} Edelleenlähetetty viesti -{5,10}\s*/m, // Yahoo Mail (fi), HubSpot (fi)
-    /^\s*-{5} Message transmis -{5}\s*/m, // Yahoo Mail (fr)
-    /^\s*-{5,8} Továbbított üzenet -{5,8}\s*/m, // Yahoo Mail (hu), Thunderbird (hu)
-    /^\s*-{5,10} Messaggio inoltrato -{5,10}\s*/m, // Yahoo Mail (it), HubSpot (it)
-    /^\s*-{5,10} Doorgestuurd bericht -{5,10}\s*/m, // Yahoo Mail (nl), Thunderbird (nl), HubSpot (nl)
-    /^\s*-{5,8} Videresendt melding -{5,8}\s*/m, // Yahoo Mail (no), Thunderbird (no)
-    /^\s*-{5} Przekazana wiadomość -{5}\s*/m, // Yahoo Mail (pl)
-    /^\s*-{5,8} Mensagem reencaminhada -{5,8}\s*/m, // Yahoo Mail (pt), Thunderbird (pt)
-    /^\s*-{5,10} Mensagem encaminhada -{5,10}\s*/m, // Yahoo Mail (pt-br), Thunderbird (pt-br), HubSpot (pt-br)
-    /^\s*-{5,8} Mesaj redirecționat -{5,8}\s*/m, // Yahoo Mail (ro)
-    /^\s*-{5} Пересылаемое сообщение -{5}\s*/m, // Yahoo Mail (ru)
-    /^\s*-{5} Preposlaná správa -{5}\s*/m, // Yahoo Mail (sk)
-    /^\s*-{5,10} Vidarebefordrat meddelande -{5,10}\s*/m, // Yahoo Mail (sv), Thunderbird (sv), HubSpot (sv)
-    /^\s*-{5} İletilmiş Mesaj -{5}\s*/m, // Yahoo Mail (tr)
-    /^\s*-{5} Перенаправлене повідомлення -{5}\s*/m, // Yahoo Mail (uk)
-    /^\s*-{8} Välitetty viesti \/ Fwd.Msg -{8}\s*/m, // Thunderbird (fi)
-    /^\s*-{8,10} Message transféré -{8,10}\s*/m, // Thunderbird (fr), HubSpot (fr)
-    /^\s*-{8} Proslijeđena poruka -{8}\s*/m, // Thunderbird (hr)
-    /^\s*-{8} Messaggio Inoltrato -{8}\s*/m, // Thunderbird (it)
-    /^\s*-{3} Treść przekazanej wiadomości -{3}\s*/m, // Thunderbird (pl)
-    /^\s*-{8} Перенаправленное сообщение -{8}\s*/m, // Thunderbird (ru)
-    /^\s*-{8} Preposlaná správa --- Forwarded Message -{8}\s*/m, // Thunderbird (sk)
-    /^\s*-{8} İletilen İleti -{8}\s*/m, // Thunderbird (tr)
-    /^\s*-{8} Переслане повідомлення -{8}\s*/m, // Thunderbird (uk)
-    /^\s*-{9,10} メッセージを転送 -{9,10}\s*/m, // HubSpot (ja)
-    /^\s*-{9,10} Wiadomość przesłana dalej -{9,10}\s*/m, // HubSpot (pl)
-    /^>?\s*-{10} Original Message -{10}\s*/m // IONOS by 1 & 1 (en)
+    ...OUTLOOK_2019_SEPARATORS_WITH_INFORMATION.map(withoutGroups), // Outlook 2019 (all locales)
+    multiline`^${HS}*-{5,8} Přeposlaná zpráva -{5,8}\s*`, // Yahoo Mail (cs), Thunderbird (cs)
+    multiline`^${HS}*-{5,8} Videresendt meddelelse -{5,8}\s*`, // Yahoo Mail (da), Thunderbird (da)
+    multiline`^${HS}*-{5,10} Weitergeleitete Nachricht -{5,10}\s*`, // Yahoo Mail (de), Thunderbird (de), HubSpot (de)
+    multiline`^${HS}*-{5,8} Forwarded Message -{5,8}\s*`, // Yahoo Mail (en), Thunderbird (en)
+    multiline`^${HS}*-{5,10} Mensaje reenviado -{5,10}\s*`, // Yahoo Mail (es), Thunderbird (es), HubSpot (es)
+    multiline`^${HS}*-{5,10} Edelleenlähetetty viesti -{5,10}\s*`, // Yahoo Mail (fi), HubSpot (fi)
+    multiline`^${HS}*-{5} Message transmis -{5}\s*`, // Yahoo Mail (fr)
+    multiline`^${HS}*-{5,8} Továbbított üzenet -{5,8}\s*`, // Yahoo Mail (hu), Thunderbird (hu)
+    multiline`^${HS}*-{5,10} Messaggio inoltrato -{5,10}\s*`, // Yahoo Mail (it), HubSpot (it)
+    multiline`^${HS}*-{5,10} Doorgestuurd bericht -{5,10}\s*`, // Yahoo Mail (nl), Thunderbird (nl), HubSpot (nl)
+    multiline`^${HS}*-{5,8} Videresendt melding -{5,8}\s*`, // Yahoo Mail (no), Thunderbird (no)
+    multiline`^${HS}*-{5} Przekazana wiadomość -{5}\s*`, // Yahoo Mail (pl)
+    multiline`^${HS}*-{5,8} Mensagem reencaminhada -{5,8}\s*`, // Yahoo Mail (pt), Thunderbird (pt)
+    multiline`^${HS}*-{5,10} Mensagem encaminhada -{5,10}\s*`, // Yahoo Mail (pt-br), Thunderbird (pt-br), HubSpot (pt-br)
+    multiline`^${HS}*-{5,8} Mesaj redirecționat -{5,8}\s*`, // Yahoo Mail (ro)
+    multiline`^${HS}*-{5} Пересылаемое сообщение -{5}\s*`, // Yahoo Mail (ru)
+    multiline`^${HS}*-{5} Preposlaná správa -{5}\s*`, // Yahoo Mail (sk)
+    multiline`^${HS}*-{5,10} Vidarebefordrat meddelande -{5,10}\s*`, // Yahoo Mail (sv), Thunderbird (sv), HubSpot (sv)
+    multiline`^${HS}*-{5} İletilmiş Mesaj -{5}\s*`, // Yahoo Mail (tr)
+    multiline`^${HS}*-{5} Перенаправлене повідомлення -{5}\s*`, // Yahoo Mail (uk)
+    multiline`^${HS}*-{8} Välitetty viesti \/ Fwd.Msg -{8}\s*`, // Thunderbird (fi)
+    multiline`^${HS}*-{8,10} Message transféré -{8,10}\s*`, // Thunderbird (fr), HubSpot (fr)
+    multiline`^${HS}*-{8} Proslijeđena poruka -{8}\s*`, // Thunderbird (hr)
+    multiline`^${HS}*-{8} Messaggio Inoltrato -{8}\s*`, // Thunderbird (it)
+    multiline`^${HS}*-{3} Treść przekazanej wiadomości -{3}\s*`, // Thunderbird (pl)
+    multiline`^${HS}*-{8} Перенаправленное сообщение -{8}\s*`, // Thunderbird (ru)
+    multiline`^${HS}*-{8} Preposlaná správa --- Forwarded Message -{8}\s*`, // Thunderbird (sk)
+    multiline`^${HS}*-{8} İletilen İleti -{8}\s*`, // Thunderbird (tr)
+    multiline`^${HS}*-{8} Переслане повідомлення -{8}\s*`, // Thunderbird (uk)
+    multiline`^${HS}*-{9,10} メッセージを転送 -{9,10}\s*`, // HubSpot (ja)
+    multiline`^${HS}*-{9,10} Wiadomość przesłana dalej -{9,10}\s*`, // HubSpot (pl)
+    multiline`^>?${HS}*-{10} Original Message -{10}\s*` // IONOS by 1 & 1 (en)
   ],
 
-  separator_with_information: [
-    /^\s?Dne\s?(?<date>.+)\,\s?(?<from_name>.+)\s*[\[|<](?<from_address>.+)[\]|>]\s?napsal\(a\)\s?:/m, // Outlook 2019 (cz)
-    /^\s?D.\s?(?<date>.+)\s?skrev\s?\"(?<from_name>.+)\"\s*[\[|<](?<from_address>.+)[\]|>]\s?:/m, // Outlook 2019 (da)
-    /^\s?Am\s?(?<date>.+)\s?schrieb\s?\"(?<from_name>.+)\"\s*[\[|<](?<from_address>.+)[\]|>]\s?:/m, // Outlook 2019 (de)
-    /^\s?On\s?(?<date>.+)\,\s?\"(?<from_name>.+)\"\s*[\[|<](?<from_address>.+)[\]|>]\s?wrote\s?:/m, // Outlook 2019 (en)
-    /^\s?El\s?(?<date>.+)\,\s?\"(?<from_name>.+)\"\s*[\[|<](?<from_address>.+)[\]|>]\s?escribió\s?:/m, // Outlook 2019 (es)
-    /^\s?Le\s?(?<date>.+)\,\s?«(?<from_name>.+)»\s*[\[|<](?<from_address>.+)[\]|>]\s?a écrit\s?:/m, // Outlook 2019 (fr)
-    /^\s?(?<from_name>.+)\s*[\[|<](?<from_address>.+)[\]|>]\s?kirjoitti\s?(?<date>.+)\s?:/m, // Outlook 2019 (fi)
-    /^\s?(?<date>.+)\s?időpontban\s?(?<from_name>.+)\s*[\[|<|(](?<from_address>.+)[\]|>|)]\s?ezt írta\s?:/m, // Outlook 2019 (hu)
-    /^\s?Il giorno\s?(?<date>.+)\s?\"(?<from_name>.+)\"\s*[\[|<](?<from_address>.+)[\]|>]\s?ha scritto\s?:/m, // Outlook 2019 (it)
-    /^\s?Op\s?(?<date>.+)\s?heeft\s?(?<from_name>.+)\s*[\[|<](?<from_address>.+)[\]|>]\s?geschreven\s?:/m, // Outlook 2019 (nl)
-    /^\s?(?<from_name>.+)\s*[\[|<](?<from_address>.+)[\]|>]\s?skrev følgende den\s?(?<date>.+)\s?:/m, // Outlook 2019 (no)
-    /^\s?Dnia\s?(?<date>.+)\s?„(?<from_name>.+)”\s*[\[|<](?<from_address>.+)[\]|>]\s?napisał\s?:/m, // Outlook 2019 (pl)
-    /^\s?Em\s?(?<date>.+)\,\s?\"(?<from_name>.+)\"\s*[\[|<](?<from_address>.+)[\]|>]\s?escreveu\s?:/m, // Outlook 2019 (pt)
-    /^\s?(?<date>.+)\s?пользователь\s?\"(?<from_name>.+)\"\s*[\[|<](?<from_address>.+)[\]|>]\s?написал\s?:/m, // Outlook 2019 (ru)
-    /^\s?(?<date>.+)\s?používateľ\s?(?<from_name>.+)\s*\([\[|<](?<from_address>.+)[\]|>]\)\s?napísal\s?:/m, // Outlook 2019 (sk)
-    /^\s?Den\s?(?<date>.+)\s?skrev\s?\"(?<from_name>.+)\"\s*[\[|<](?<from_address>.+)[\]|>]\s?följande\s?:/m, // Outlook 2019 (sv)
-    /^\s?\"(?<from_name>.+)\"\s*[\[|<](?<from_address>.+)[\]|>]\,\s?(?<date>.+)\s?tarihinde şunu yazdı\s?:/m // Outlook 2019 (tr)
-  ],
+  separator_with_information: OUTLOOK_2019_SEPARATORS_WITH_INFORMATION,
 
   original_subject: [
     /^\*?Subject\s?:\*?(.+)/im, // Apple Mail (en), Gmail (all locales), Outlook Live / 365 (all locales), New Outlook 2019 (en), Thunderbird (da, en), Missive (en), HubSpot (en)
@@ -206,202 +274,202 @@ const REGEXES: Record<string, RegExp | RegExp[]> = {
   ],
 
   original_from: [
-    /^(\*?\s*From\s?:\*?(.+))$/m, // Apple Mail (en), Outlook Live / 365 (all locales), New Outlook 2019 (en), Thunderbird (da, en), Missive (en), HubSpot (en)
-    /^(\s*Od\s?:(.+))$/m, // Apple Mail (cs, pl, sk), Gmail (cs, pl, sk), New Outlook 2019 (cs, pl, sk), Thunderbird (cs, sk), HubSpot (pl)
-    /^(\s*Fra\s?:(.+))$/m, // Apple Mail (da, no), Gmail (da, no), New Outlook 2019 (da), Thunderbird (no)
-    /^(\s*Von\s?:(.+))$/m, // Apple Mail (de), Gmail (de), New Outlook 2019 (de), Thunderbird (de), HubSpot (de)
-    /^(\s*De\s?:(.+))$/m, // Apple Mail (es, fr, pt, pt-br), Gmail (es, fr, pt, pt-br), New Outlook 2019 (es, fr, pt, pt-br), Thunderbird (fr, pt, pt-br), HubSpot (es, fr, pt-br)
-    /^(\s*Lähettäjä\s?:(.+))$/m, // Apple Mail (fi), Gmail (fi), New Outlook 2019 (fi), Thunderbird (fi), HubSpot (fi)
-    /^(\s*Šalje\s?:(.+))$/m, // Apple Mail (hr), Gmail (hr), Thunderbird (hr)
-    /^(\s*Feladó\s?:(.+))$/m, // Apple Mail (hu), Gmail (hu), New Outlook 2019 (fr), Thunderbird (hu)
-    /^(\s*Da\s?:(.+))$/m, // Apple Mail (it), Gmail (it), New Outlook 2019 (it), HubSpot (it)
-    /^(\s*Van\s?:(.+))$/m, // Apple Mail (nl), Gmail (nl), New Outlook 2019 (nl), Thunderbird (nl), HubSpot (nl)
-    /^(\s*Expeditorul\s?:(.+))$/m, // Apple Mail (ro)
-    /^(\s*Отправитель\s?:(.+))$/m, // Apple Mail (ru)
-    /^(\s*Från\s?:(.+))$/m, // Apple Mail (sv), Gmail (sv), New Outlook 2019 (sv), Thunderbird (sv), HubSpot (sv)
-    /^(\s*Kimden\s?:(.+))$/m, // Apple Mail (tr), Thunderbird (tr)
-    /^(\s*Від кого\s?:(.+))$/m, // Apple Mail (uk)
-    /^(\s*Saatja\s?:(.+))$/m, // Gmail (et)
-    /^(\s*De la\s?:(.+))$/m, // Gmail (ro)
-    /^(\s*Gönderen\s?:(.+))$/m, // Gmail (tr)
-    /^(\s*От\s?:(.+))$/m, // Gmail (ru), New Outlook 2019 (ru), Thunderbird (ru)
-    /^(\s*Від\s?:(.+))$/m, // Gmail (uk), Thunderbird (uk)
-    /^(\s*Mittente\s?:(.+))$/m, // Thunderbird (it)
-    /^(\s*Nadawca\s?:(.+))$/m, // Thunderbird (pl)
-    /^(\s*de la\s?:(.+))$/m, // Thunderbird (ro)
-    /^(\s*送信元：(.+))$/m // HubSpot (ja)
+    multiline`^(\*?${HS}*From\s?:\*?(.+))$`, // Apple Mail (en), Outlook Live / 365 (all locales), New Outlook 2019 (en), Thunderbird (da, en), Missive (en), HubSpot (en)
+    multiline`^(${HS}*Od\s?:(.+))$`, // Apple Mail (cs, pl, sk), Gmail (cs, pl, sk), New Outlook 2019 (cs, pl, sk), Thunderbird (cs, sk), HubSpot (pl)
+    multiline`^(${HS}*Fra\s?:(.+))$`, // Apple Mail (da, no), Gmail (da, no), New Outlook 2019 (da), Thunderbird (no)
+    multiline`^(${HS}*Von\s?:(.+))$`, // Apple Mail (de), Gmail (de), New Outlook 2019 (de), Thunderbird (de), HubSpot (de)
+    multiline`^(${HS}*De\s?:(.+))$`, // Apple Mail (es, fr, pt, pt-br), Gmail (es, fr, pt, pt-br), New Outlook 2019 (es, fr, pt, pt-br), Thunderbird (fr, pt, pt-br), HubSpot (es, fr, pt-br)
+    multiline`^(${HS}*Lähettäjä\s?:(.+))$`, // Apple Mail (fi), Gmail (fi), New Outlook 2019 (fi), Thunderbird (fi), HubSpot (fi)
+    multiline`^(${HS}*Šalje\s?:(.+))$`, // Apple Mail (hr), Gmail (hr), Thunderbird (hr)
+    multiline`^(${HS}*Feladó\s?:(.+))$`, // Apple Mail (hu), Gmail (hu), New Outlook 2019 (fr), Thunderbird (hu)
+    multiline`^(${HS}*Da\s?:(.+))$`, // Apple Mail (it), Gmail (it), New Outlook 2019 (it), HubSpot (it)
+    multiline`^(${HS}*Van\s?:(.+))$`, // Apple Mail (nl), Gmail (nl), New Outlook 2019 (nl), Thunderbird (nl), HubSpot (nl)
+    multiline`^(${HS}*Expeditorul\s?:(.+))$`, // Apple Mail (ro)
+    multiline`^(${HS}*Отправитель\s?:(.+))$`, // Apple Mail (ru)
+    multiline`^(${HS}*Från\s?:(.+))$`, // Apple Mail (sv), Gmail (sv), New Outlook 2019 (sv), Thunderbird (sv), HubSpot (sv)
+    multiline`^(${HS}*Kimden\s?:(.+))$`, // Apple Mail (tr), Thunderbird (tr)
+    multiline`^(${HS}*Від кого\s?:(.+))$`, // Apple Mail (uk)
+    multiline`^(${HS}*Saatja\s?:(.+))$`, // Gmail (et)
+    multiline`^(${HS}*De la\s?:(.+))$`, // Gmail (ro)
+    multiline`^(${HS}*Gönderen\s?:(.+))$`, // Gmail (tr)
+    multiline`^(${HS}*От\s?:(.+))$`, // Gmail (ru), New Outlook 2019 (ru), Thunderbird (ru)
+    multiline`^(${HS}*Від\s?:(.+))$`, // Gmail (uk), Thunderbird (uk)
+    multiline`^(${HS}*Mittente\s?:(.+))$`, // Thunderbird (it)
+    multiline`^(${HS}*Nadawca\s?:(.+))$`, // Thunderbird (pl)
+    multiline`^(${HS}*de la\s?:(.+))$`, // Thunderbird (ro)
+    multiline`^(${HS}*送信元：(.+))$` // HubSpot (ja)
   ],
 
   original_from_lax: [
-    /(\s*From\s?:(.+?)\s?\n?\s*[\[|<](.+?)[\]|>])/, // Yahoo Mail (en)
-    /(\s*Od\s?:(.+?)\s?\n?\s*[\[|<](.+?)[\]|>])/, // Yahoo Mail (cs, pl, sk)
-    /(\s*Fra\s?:(.+?)\s?\n?\s*[\[|<](.+?)[\]|>])/, // Yahoo Mail (da, no)
-    /(\s*Von\s?:(.+?)\s?\n?\s*[\[|<](.+?)[\]|>])/, // Yahoo Mail (de)
-    /(\s*De\s?:(.+?)\s?\n?\s*[\[|<](.+?)[\]|>])/, // Yahoo Mail (es, fr, pt, pt-br)
-    /(\s*Lähettäjä\s?:(.+?)\s?\n?\s*[\[|<](.+?)[\]|>])/, // Yahoo Mail (fi)
-    /(\s*Feladó\s?:(.+?)\s?\n?\s*[\[|<](.+?)[\]|>])/, // Yahoo Mail (hu)
-    /(\s*Da\s?:(.+?)\s?\n?\s*[\[|<](.+?)[\]|>])/, // Yahoo Mail (it)
-    /(\s*Van\s?:(.+?)\s?\n?\s*[\[|<](.+?)[\]|>])/, // Yahoo Mail (nl)
-    /(\s*De la\s?:(.+?)\s?\n?\s*[\[|<](.+?)[\]|>])/, // Yahoo Mail (ro)
-    /(\s*От\s?:(.+?)\s?\n?\s*[\[|<](.+?)[\]|>])/, // Yahoo Mail (ru)
-    /(\s*Från\s?:(.+?)\s?\n?\s*[\[|<](.+?)[\]|>])/, // Yahoo Mail (sv)
-    /(\s*Kimden\s?:(.+?)\s?\n?\s*[\[|<](.+?)[\]|>])/, // Yahoo Mail (tr)
-    /(\s*Від\s?:(.+?)\s?\n?\s*[\[|<](.+?)[\]|>])/ // Yahoo Mail (uk)
+    laxFromHeader("From"), // Yahoo Mail (en)
+    laxFromHeader("Od"), // Yahoo Mail (cs, pl, sk)
+    laxFromHeader("Fra"), // Yahoo Mail (da, no)
+    laxFromHeader("Von"), // Yahoo Mail (de)
+    laxFromHeader("De"), // Yahoo Mail (es, fr, pt, pt-br)
+    laxFromHeader("Lähettäjä"), // Yahoo Mail (fi)
+    laxFromHeader("Feladó"), // Yahoo Mail (hu)
+    laxFromHeader("Da"), // Yahoo Mail (it)
+    laxFromHeader("Van"), // Yahoo Mail (nl)
+    laxFromHeader("De la"), // Yahoo Mail (ro)
+    laxFromHeader("От"), // Yahoo Mail (ru)
+    laxFromHeader("Från"), // Yahoo Mail (sv)
+    laxFromHeader("Kimden"), // Yahoo Mail (tr)
+    laxFromHeader("Від") // Yahoo Mail (uk)
   ],
 
   original_to: [
-    /^\*?\s*To\s?:\*?(.+)$/m, // Apple Mail (en), Gmail (all locales), Outlook Live / 365 (all locales), Thunderbird (da, en), Missive (en), HubSpot (en)
-    /^\s*Komu\s?:(.+)$/m, // Apple Mail (cs), New Outlook 2019 (cs, sk), Thunderbird (cs)
-    /^\s*Til\s?:(.+)$/m, // Apple Mail (da, no), New Outlook 2019 (da), Thunderbird (no)
-    /^\s*An\s?:(.+)$/m, // Apple Mail (de), New Outlook 2019 (de), Thunderbird (de), HubSpot (de)
-    /^\s*Para\s?:(.+)$/m, // Apple Mail (es, pt, pt-br), New Outlook 2019 (es, pt, pt-br), Thunderbird (es, pt, pt-br), HubSpot (pt-br)
-    /^\s*Vastaanottaja\s?:(.+)$/m, // Apple Mail (fi), New Outlook 2019 (fi), Thunderbird (fi), HubSpot (fi)
-    /^\s*À\s?:(.+)$/m, // Apple Mail (fr), New Outlook 2019 (fr), HubSpot (fr)
-    /^\s*Prima\s?:(.+)$/m, // Apple Mail (hr), Thunderbird (hr)
-    /^\s*Címzett\s?:(.+)$/m, // Apple Mail (hu), New Outlook 2019 (hu), Thunderbird (hu)
-    /^\s*A\s?:(.+)$/m, // Apple Mail (it), New Outlook 2019 (it), Thunderbird (it), HubSpot (es, it)
-    /^\s*Aan\s?:(.+)$/m, // Apple Mail (nl), New Outlook 2019 (nl), Thunderbird (nl), HubSpot (nl)
-    /^\s*Do\s?:(.+)$/m, // Apple Mail (pl), New Outlook 2019 (pl), HubSpot (pl)
-    /^\s*Destinatarul\s?:(.+)$/m, // Apple Mail (ro)
-    /^\s*Кому\s?:(.+)$/m, // Apple Mail (ru, uk), New Outlook 2019 (ru), Thunderbird (ru, uk)
-    /^\s*Pre\s?:(.+)$/m, // Apple Mail (sk), Thunderbird (sk)
-    /^\s*Till\s?:(.+)$/m, // Apple Mail (sv), New Outlook 2019 (sv), Thunderbird (sv)
-    /^\s*Kime\s?:(.+)$/m, // Apple Mail (tr), Thunderbird (tr)
-    /^\s*Pour\s?:(.+)$/m, // Thunderbird (fr)
-    /^\s*Adresat\s?:(.+)$/m, // Thunderbird (pl)
-    /^\s*送信先：(.+)$/m // HubSpot (ja)
+    multiline`^\*?${HS}*To\s?:\*?(.+)$`, // Apple Mail (en), Gmail (all locales), Outlook Live / 365 (all locales), Thunderbird (da, en), Missive (en), HubSpot (en)
+    multiline`^${HS}*Komu\s?:(.+)$`, // Apple Mail (cs), New Outlook 2019 (cs, sk), Thunderbird (cs)
+    multiline`^${HS}*Til\s?:(.+)$`, // Apple Mail (da, no), New Outlook 2019 (da), Thunderbird (no)
+    multiline`^${HS}*An\s?:(.+)$`, // Apple Mail (de), New Outlook 2019 (de), Thunderbird (de), HubSpot (de)
+    multiline`^${HS}*Para\s?:(.+)$`, // Apple Mail (es, pt, pt-br), New Outlook 2019 (es, pt, pt-br), Thunderbird (es, pt, pt-br), HubSpot (pt-br)
+    multiline`^${HS}*Vastaanottaja\s?:(.+)$`, // Apple Mail (fi), New Outlook 2019 (fi), Thunderbird (fi), HubSpot (fi)
+    multiline`^${HS}*À\s?:(.+)$`, // Apple Mail (fr), New Outlook 2019 (fr), HubSpot (fr)
+    multiline`^${HS}*Prima\s?:(.+)$`, // Apple Mail (hr), Thunderbird (hr)
+    multiline`^${HS}*Címzett\s?:(.+)$`, // Apple Mail (hu), New Outlook 2019 (hu), Thunderbird (hu)
+    multiline`^${HS}*A\s?:(.+)$`, // Apple Mail (it), New Outlook 2019 (it), Thunderbird (it), HubSpot (es, it)
+    multiline`^${HS}*Aan\s?:(.+)$`, // Apple Mail (nl), New Outlook 2019 (nl), Thunderbird (nl), HubSpot (nl)
+    multiline`^${HS}*Do\s?:(.+)$`, // Apple Mail (pl), New Outlook 2019 (pl), HubSpot (pl)
+    multiline`^${HS}*Destinatarul\s?:(.+)$`, // Apple Mail (ro)
+    multiline`^${HS}*Кому\s?:(.+)$`, // Apple Mail (ru, uk), New Outlook 2019 (ru), Thunderbird (ru, uk)
+    multiline`^${HS}*Pre\s?:(.+)$`, // Apple Mail (sk), Thunderbird (sk)
+    multiline`^${HS}*Till\s?:(.+)$`, // Apple Mail (sv), New Outlook 2019 (sv), Thunderbird (sv)
+    multiline`^${HS}*Kime\s?:(.+)$`, // Apple Mail (tr), Thunderbird (tr)
+    multiline`^${HS}*Pour\s?:(.+)$`, // Thunderbird (fr)
+    multiline`^${HS}*Adresat\s?:(.+)$`, // Thunderbird (pl)
+    multiline`^${HS}*送信先：(.+)$` // HubSpot (ja)
   ],
 
   original_to_lax: [
-    /\s*To\s?:(.+)$/m, // Yahook Mail (en)
-    /\s*Komu\s?:(.+)$/m, // Yahook Mail (cs, sk)
-    /\s*Til\s?:(.+)$/m, // Yahook Mail (da, no, sv)
-    /\s*An\s?:(.+)$/m, // Yahook Mail (de)
-    /\s*Para\s?:(.+)$/m, // Yahook Mail (es, pt, pt-br)
-    /\s*Vastaanottaja\s?:(.+)$/m, // Yahook Mail (fi)
-    /\s*À\s?:(.+)$/m, // Yahook Mail (fr)
-    /\s*Címzett\s?:(.+)$/m, // Yahook Mail (hu)
-    /\s*A\s?:(.+)$/m, // Yahook Mail (it)
-    /\s*Aan\s?:(.+)$/m, // Yahook Mail (nl)
-    /\s*Do\s?:(.+)$/m, // Yahook Mail (pl)
-    /\s*Către\s?:(.+)$/m, // Yahook Mail (ro), Thunderbird (ro)
-    /\s*Кому\s?:(.+)$/m, // Yahook Mail (ru, uk)
-    /\s*Till\s?:(.+)$/m, // Yahook Mail (sv)
-    /\s*Kime\s?:(.+)$/m // Yahook Mail (tr)
+    /(?<!\s)\s*To\s?:(.+)$/m, // Yahook Mail (en)
+    /(?<!\s)\s*Komu\s?:(.+)$/m, // Yahook Mail (cs, sk)
+    /(?<!\s)\s*Til\s?:(.+)$/m, // Yahook Mail (da, no, sv)
+    /(?<!\s)\s*An\s?:(.+)$/m, // Yahook Mail (de)
+    /(?<!\s)\s*Para\s?:(.+)$/m, // Yahook Mail (es, pt, pt-br)
+    /(?<!\s)\s*Vastaanottaja\s?:(.+)$/m, // Yahook Mail (fi)
+    /(?<!\s)\s*À\s?:(.+)$/m, // Yahook Mail (fr)
+    /(?<!\s)\s*Címzett\s?:(.+)$/m, // Yahook Mail (hu)
+    /(?<!\s)\s*A\s?:(.+)$/m, // Yahook Mail (it)
+    /(?<!\s)\s*Aan\s?:(.+)$/m, // Yahook Mail (nl)
+    /(?<!\s)\s*Do\s?:(.+)$/m, // Yahook Mail (pl)
+    /(?<!\s)\s*Către\s?:(.+)$/m, // Yahook Mail (ro), Thunderbird (ro)
+    /(?<!\s)\s*Кому\s?:(.+)$/m, // Yahook Mail (ru, uk)
+    /(?<!\s)\s*Till\s?:(.+)$/m, // Yahook Mail (sv)
+    /(?<!\s)\s*Kime\s?:(.+)$/m // Yahook Mail (tr)
   ],
 
   original_reply_to: [
-    /^\s*Reply-To\s?:(.+)$/m, // Apple Mail (en)
-    /^\s*Odgovori na\s?:(.+)$/m, // Apple Mail (hr)
-    /^\s*Odpověď na\s?:(.+)$/m, // Apple Mail (cs)
-    /^\s*Svar til\s?:(.+)$/m, // Apple Mail (da)
-    /^\s*Antwoord aan\s?:(.+)$/m, // Apple Mail (nl)
-    /^\s*Vastaus\s?:(.+)$/m, // Apple Mail (fi)
-    /^\s*Répondre à\s?:(.+)$/m, // Apple Mail (fr)
-    /^\s*Antwort an\s?:(.+)$/m, // Apple Mail (de)
-    /^\s*Válaszcím\s?:(.+)$/m, // Apple Mail (hu)
-    /^\s*Rispondi a\s?:(.+)$/m, // Apple Mail (it)
-    /^\s*Svar til\s?:(.+)$/m, // Apple Mail (no)
-    /^\s*Odpowiedź-do\s?:(.+)$/m, // Apple Mail (pl)
-    /^\s*Responder A\s?:(.+)$/m, // Apple Mail (pt)
-    /^\s*Responder a\s?:(.+)$/m, // Apple Mail (pt-br, es)
-    /^\s*Răspuns către\s?:(.+)$/m, // Apple Mail (ro)
-    /^\s*Ответ-Кому\s?:(.+)$/m, // Apple Mail (ru)
-    /^\s*Odpovedať-Pre\s?:(.+)$/m, // Apple Mail (sk)
-    /^\s*Svara till\s?:(.+)$/m, // Apple Mail (sv)
-    /^\s*Yanıt Adresi\s?:(.+)$/m, // Apple Mail (tr)
-    /^\s*Кому відповісти\s?:(.+)$/m // Apple Mail (uk)
+    multiline`^${HS}*Reply-To\s?:(.+)$`, // Apple Mail (en)
+    multiline`^${HS}*Odgovori na\s?:(.+)$`, // Apple Mail (hr)
+    multiline`^${HS}*Odpověď na\s?:(.+)$`, // Apple Mail (cs)
+    multiline`^${HS}*Svar til\s?:(.+)$`, // Apple Mail (da)
+    multiline`^${HS}*Antwoord aan\s?:(.+)$`, // Apple Mail (nl)
+    multiline`^${HS}*Vastaus\s?:(.+)$`, // Apple Mail (fi)
+    multiline`^${HS}*Répondre à\s?:(.+)$`, // Apple Mail (fr)
+    multiline`^${HS}*Antwort an\s?:(.+)$`, // Apple Mail (de)
+    multiline`^${HS}*Válaszcím\s?:(.+)$`, // Apple Mail (hu)
+    multiline`^${HS}*Rispondi a\s?:(.+)$`, // Apple Mail (it)
+    multiline`^${HS}*Svar til\s?:(.+)$`, // Apple Mail (no)
+    multiline`^${HS}*Odpowiedź-do\s?:(.+)$`, // Apple Mail (pl)
+    multiline`^${HS}*Responder A\s?:(.+)$`, // Apple Mail (pt)
+    multiline`^${HS}*Responder a\s?:(.+)$`, // Apple Mail (pt-br, es)
+    multiline`^${HS}*Răspuns către\s?:(.+)$`, // Apple Mail (ro)
+    multiline`^${HS}*Ответ-Кому\s?:(.+)$`, // Apple Mail (ru)
+    multiline`^${HS}*Odpovedať-Pre\s?:(.+)$`, // Apple Mail (sk)
+    multiline`^${HS}*Svara till\s?:(.+)$`, // Apple Mail (sv)
+    multiline`^${HS}*Yanıt Adresi\s?:(.+)$`, // Apple Mail (tr)
+    multiline`^${HS}*Кому відповісти\s?:(.+)$` // Apple Mail (uk)
   ],
 
   original_cc: [
-    /^\*?\s*Cc\s?:\*?(.+)$/m, // Apple Mail (en, da, es, fr, hr, it, pt, pt-br, ro, sk), Gmail (all locales), Outlook Live / 365 (all locales), New Outlook 2019 (da, de, en, fr, it, pt-br), Missive (en), HubSpot (de, en, es, it, nl, pt-br)
-    /^\s*CC\s?:(.+)$/m, // New Outlook 2019 (es, nl, pt), Thunderbird (da, en, es, fi, hr, hu, it, nl, no, pt, pt-br, ro, tr, uk)
-    /^\s*Kopie\s?:(.+)$/m, // Apple Mail (cs, de, nl), New Outlook 2019 (cs), Thunderbird (cs)
-    /^\s*Kopio\s?:(.+)$/m, // Apple Mail (fi), New Outlook 2019 (fi), HubSpot (fi)
-    /^\s*Másolat\s?:(.+)$/m, // Apple Mail (hu)
-    /^\s*Kopi\s?:(.+)$/m, // Apple Mail (no)
-    /^\s*Dw\s?:(.+)$/m, // Apple Mail (pl)
-    /^\s*Копия\s?:(.+)$/m, // Apple Mail (ru), New Outlook 2019 (ru), Thunderbird (ru)
-    /^\s*Kopia\s?:(.+)$/m, // Apple Mail (sv), New Outlook 2019 (sv), Thunderbird (pl, sv), HubSpot (sv)
-    /^\s*Bilgi\s?:(.+)$/m, // Apple Mail (tr)
-    /^\s*Копія\s?:(.+)$/m, // Apple Mail (uk),
-    /^\s*Másolatot kap\s?:(.+)$/m, // New Outlook 2019 (hu)
-    /^\s*Kópia\s?:(.+)$/m, // New Outlook 2019 (sk), Thunderbird (sk)
-    /^\s*DW\s?:(.+)$/m, // New Outlook 2019 (pl), HubSpot (pl)
-    /^\s*Kopie \(CC\)\s?:(.+)$/m, // Thunderbird (de)
-    /^\s*Copie à\s?:(.+)$/m, // Thunderbird (fr)
-    /^\s*CC：(.+)$/m // HubSpot (ja)
+    multiline`^\*?${HS}*Cc\s?:\*?(.+)$`, // Apple Mail (en, da, es, fr, hr, it, pt, pt-br, ro, sk), Gmail (all locales), Outlook Live / 365 (all locales), New Outlook 2019 (da, de, en, fr, it, pt-br), Missive (en), HubSpot (de, en, es, it, nl, pt-br)
+    multiline`^${HS}*CC\s?:(.+)$`, // New Outlook 2019 (es, nl, pt), Thunderbird (da, en, es, fi, hr, hu, it, nl, no, pt, pt-br, ro, tr, uk)
+    multiline`^${HS}*Kopie\s?:(.+)$`, // Apple Mail (cs, de, nl), New Outlook 2019 (cs), Thunderbird (cs)
+    multiline`^${HS}*Kopio\s?:(.+)$`, // Apple Mail (fi), New Outlook 2019 (fi), HubSpot (fi)
+    multiline`^${HS}*Másolat\s?:(.+)$`, // Apple Mail (hu)
+    multiline`^${HS}*Kopi\s?:(.+)$`, // Apple Mail (no)
+    multiline`^${HS}*Dw\s?:(.+)$`, // Apple Mail (pl)
+    multiline`^${HS}*Копия\s?:(.+)$`, // Apple Mail (ru), New Outlook 2019 (ru), Thunderbird (ru)
+    multiline`^${HS}*Kopia\s?:(.+)$`, // Apple Mail (sv), New Outlook 2019 (sv), Thunderbird (pl, sv), HubSpot (sv)
+    multiline`^${HS}*Bilgi\s?:(.+)$`, // Apple Mail (tr)
+    multiline`^${HS}*Копія\s?:(.+)$`, // Apple Mail (uk),
+    multiline`^${HS}*Másolatot kap\s?:(.+)$`, // New Outlook 2019 (hu)
+    multiline`^${HS}*Kópia\s?:(.+)$`, // New Outlook 2019 (sk), Thunderbird (sk)
+    multiline`^${HS}*DW\s?:(.+)$`, // New Outlook 2019 (pl), HubSpot (pl)
+    multiline`^${HS}*Kopie \(CC\)\s?:(.+)$`, // Thunderbird (de)
+    multiline`^${HS}*Copie à\s?:(.+)$`, // Thunderbird (fr)
+    multiline`^${HS}*CC：(.+)$` // HubSpot (ja)
   ],
 
   original_cc_lax: [
-    /\s*Cc\s?:(.+)$/m, // Yahoo Mail (da, en, it, nl, pt, pt-br, ro, tr)
-    /\s*CC\s?:(.+)$/m, // Yahoo Mail (de, es)
-    /\s*Kopie\s?:(.+)$/m, // Yahoo Mail (cs)
-    /\s*Kopio\s?:(.+)$/m, // Yahoo Mail (fi)
-    /\s*Másolat\s?:(.+)$/m, // Yahoo Mail (hu)
-    /\s*Kopi\s?:(.+)$/m, // Yahoo Mail (no)
-    /\s*Dw\s?(.+)$/m, // Yahoo Mail (pl)
-    /\s*Копия\s?:(.+)$/m, // Yahoo Mail (ru)
-    /\s*Kópia\s?:(.+)$/m, // Yahoo Mail (sk)
-    /\s*Kopia\s?:(.+)$/m, // Yahoo Mail (sv)
-    /\s*Копія\s?:(.+)$/m // Yahoo Mail (uk)
+    /(?<!\s)\s*Cc\s?:(.+)$/m, // Yahoo Mail (da, en, it, nl, pt, pt-br, ro, tr)
+    /(?<!\s)\s*CC\s?:(.+)$/m, // Yahoo Mail (de, es)
+    /(?<!\s)\s*Kopie\s?:(.+)$/m, // Yahoo Mail (cs)
+    /(?<!\s)\s*Kopio\s?:(.+)$/m, // Yahoo Mail (fi)
+    /(?<!\s)\s*Másolat\s?:(.+)$/m, // Yahoo Mail (hu)
+    /(?<!\s)\s*Kopi\s?:(.+)$/m, // Yahoo Mail (no)
+    /(?<!\s)\s*Dw\s?(.+)$/m, // Yahoo Mail (pl)
+    /(?<!\s)\s*Копия\s?:(.+)$/m, // Yahoo Mail (ru)
+    /(?<!\s)\s*Kópia\s?:(.+)$/m, // Yahoo Mail (sk)
+    /(?<!\s)\s*Kopia\s?:(.+)$/m, // Yahoo Mail (sv)
+    /(?<!\s)\s*Копія\s?:(.+)$/m // Yahoo Mail (uk)
   ],
 
   original_date: [
-    /^\s*Date\s?:(.+)$/m, // Apple Mail (en, fr), Gmail (all locales), New Outlook 2019 (en, fr), Thunderbird (da, en, fr), Missive (en), HubSpot (en, fr)
-    /^\s*Datum\s?:(.+)$/m, // Apple Mail (cs, de, hr, nl, sv), New Outlook 2019 (cs, de, nl, sv), Thunderbird (cs, de, hr, nl, sv), HubSpot (de, nl, sv)
-    /^\s*Dato\s?:(.+)$/m, // Apple Mail (da, no), New Outlook 2019 (da), Thunderbird (no)
-    /^\s*Envoyé\s?:(.+)$/m, // New Outlook 2019 (fr)
-    /^\s*Fecha\s?:(.+)$/m, // Apple Mail (es), New Outlook 2019 (es), Thunderbird (es), HubSpot (es)
-    /^\s*Päivämäärä\s?:(.+)$/m, // Apple Mail (fi), New Outlook 2019 (fi), HubSpot (fi)
-    /^\s*Dátum\s?:(.+)$/m, // Apple Mail (hu, sk), New Outlook 2019 (sk), Thunderbird (hu, sk)
-    /^\s*Data\s?:(.+)$/m, // Apple Mail (it, pl, pt, pt-br), New Outlook 2019 (it, pl, pt, pt-br), Thunderbird (it, pl, pt, pt-br), HubSpot (it, pl, pt-br)
-    /^\s*Dată\s?:(.+)$/m, // Apple Mail (ro), Thunderbird (ro)
-    /^\s*Дата\s?:(.+)$/m, // Apple Mail (ru, uk), New Outlook 2019 (ru), Thunderbird (ru, uk)
-    /^\s*Tarih\s?:(.+)$/m, // Apple Mail (tr), Thunderbird (tr)
-    /^\*?\s*Sent\s?:\*?(.+)$/m, // Outlook Live / 365 (all locales)
-    /^\s*Päiväys\s?:(.+)$/m, // Thunderbird (fi)
-    /^\s*日付：(.+)$/m // HubSpot (ja)
+    multiline`^${HS}*Date\s?:(.+)$`, // Apple Mail (en, fr), Gmail (all locales), New Outlook 2019 (en, fr), Thunderbird (da, en, fr), Missive (en), HubSpot (en, fr)
+    multiline`^${HS}*Datum\s?:(.+)$`, // Apple Mail (cs, de, hr, nl, sv), New Outlook 2019 (cs, de, nl, sv), Thunderbird (cs, de, hr, nl, sv), HubSpot (de, nl, sv)
+    multiline`^${HS}*Dato\s?:(.+)$`, // Apple Mail (da, no), New Outlook 2019 (da), Thunderbird (no)
+    multiline`^${HS}*Envoyé\s?:(.+)$`, // New Outlook 2019 (fr)
+    multiline`^${HS}*Fecha\s?:(.+)$`, // Apple Mail (es), New Outlook 2019 (es), Thunderbird (es), HubSpot (es)
+    multiline`^${HS}*Päivämäärä\s?:(.+)$`, // Apple Mail (fi), New Outlook 2019 (fi), HubSpot (fi)
+    multiline`^${HS}*Dátum\s?:(.+)$`, // Apple Mail (hu, sk), New Outlook 2019 (sk), Thunderbird (hu, sk)
+    multiline`^${HS}*Data\s?:(.+)$`, // Apple Mail (it, pl, pt, pt-br), New Outlook 2019 (it, pl, pt, pt-br), Thunderbird (it, pl, pt, pt-br), HubSpot (it, pl, pt-br)
+    multiline`^${HS}*Dată\s?:(.+)$`, // Apple Mail (ro), Thunderbird (ro)
+    multiline`^${HS}*Дата\s?:(.+)$`, // Apple Mail (ru, uk), New Outlook 2019 (ru), Thunderbird (ru, uk)
+    multiline`^${HS}*Tarih\s?:(.+)$`, // Apple Mail (tr), Thunderbird (tr)
+    multiline`^\*?${HS}*Sent\s?:\*?(.+)$`, // Outlook Live / 365 (all locales)
+    multiline`^${HS}*Päiväys\s?:(.+)$`, // Thunderbird (fi)
+    multiline`^${HS}*日付：(.+)$` // HubSpot (ja)
   ],
 
   original_date_lax: [
-    /\s*Datum\s?:(.+)$/m, // Yahoo Mail (cs)
-    /\s*Sendt\s?:(.+)$/m, // Yahoo Mail (da, no)
-    /\s*Gesendet\s?:(.+)$/m, // Yahoo Mail (de)
-    /\s*Sent\s?:(.+)$/m, // Yahoo Mail (en)
-    /\s*Enviado\s?:(.+)$/m, // Yahoo Mail (es, pt, pt-br)
-    /\s*Envoyé\s?:(.+)$/m, // Yahoo Mail (fr)
-    /\s*Lähetetty\s?:(.+)$/m, // Yahoo Mail (fi)
-    /\s*Elküldve\s?:(.+)$/m, // Yahoo Mail (hu)
-    /\s*Inviato\s?:(.+)$/m, // Yahoo Mail (it)
-    /\s*Verzonden\s?:(.+)$/m, // Yahoo Mail (it)
-    /\s*Wysłano\s?:(.+)$/m, // Yahoo Mail (pl)
-    /\s*Trimis\s?:(.+)$/m, // Yahoo Mail (ro)
-    /\s*Отправлено\s?:(.+)$/m, // Yahoo Mail (ru)
-    /\s*Odoslané\s?:(.+)$/m, // Yahoo Mail (sk)
-    /\s*Skickat\s?:(.+)$/m, // Yahoo Mail (sv)
-    /\s*Gönderilen\s?:(.+)$/m, // Yahoo Mail (tr)
-    /\s*Відправлено\s?:(.+)$/m // Yahoo Mail (uk)
+    /(?<!\s)\s*Datum\s?:(.+)$/m, // Yahoo Mail (cs)
+    /(?<!\s)\s*Sendt\s?:(.+)$/m, // Yahoo Mail (da, no)
+    /(?<!\s)\s*Gesendet\s?:(.+)$/m, // Yahoo Mail (de)
+    /(?<!\s)\s*Sent\s?:(.+)$/m, // Yahoo Mail (en)
+    /(?<!\s)\s*Enviado\s?:(.+)$/m, // Yahoo Mail (es, pt, pt-br)
+    /(?<!\s)\s*Envoyé\s?:(.+)$/m, // Yahoo Mail (fr)
+    /(?<!\s)\s*Lähetetty\s?:(.+)$/m, // Yahoo Mail (fi)
+    /(?<!\s)\s*Elküldve\s?:(.+)$/m, // Yahoo Mail (hu)
+    /(?<!\s)\s*Inviato\s?:(.+)$/m, // Yahoo Mail (it)
+    /(?<!\s)\s*Verzonden\s?:(.+)$/m, // Yahoo Mail (it)
+    /(?<!\s)\s*Wysłano\s?:(.+)$/m, // Yahoo Mail (pl)
+    /(?<!\s)\s*Trimis\s?:(.+)$/m, // Yahoo Mail (ro)
+    /(?<!\s)\s*Отправлено\s?:(.+)$/m, // Yahoo Mail (ru)
+    /(?<!\s)\s*Odoslané\s?:(.+)$/m, // Yahoo Mail (sk)
+    /(?<!\s)\s*Skickat\s?:(.+)$/m, // Yahoo Mail (sv)
+    /(?<!\s)\s*Gönderilen\s?:(.+)$/m, // Yahoo Mail (tr)
+    /(?<!\s)\s*Відправлено\s?:(.+)$/m // Yahoo Mail (uk)
   ],
 
   mailbox: [
-    /^\s?\n?\s*<.+?<mailto\:(.+?)>>/, // "<walter.sheltan@acme.com<mailto:walter.sheltan@acme.com>>"
-    /^(.+?)\s?\n?\s*<.+?<mailto\:(.+?)>>/, // "Walter Sheltan <walter.sheltan@acme.com<mailto:walter.sheltan@acme.com>>"
-    /^(.+?)\s?\n?\s*[\[|<]mailto\:(.+?)[\]|>]/, // "Walter Sheltan <mailto:walter.sheltan@acme.com>" or "Walter Sheltan [mailto:walter.sheltan@acme.com]" or "walter.sheltan@acme.com <mailto:walter.sheltan@acme.com>"
-    /^\'(.+?)\'\s?\n?\s*[\[|<](.+?)[\]|>]/, // "'Walter Sheltan' <walter.sheltan@acme.com>" or "'Walter Sheltan' [walter.sheltan@acme.com]" or "'walter.sheltan@acme.com' <walter.sheltan@acme.com>"
-    /^\"\'(.+?)\'\"\s?\n?\s*[\[|<](.+?)[\]|>]/, // ""'Walter Sheltan'" <walter.sheltan@acme.com>" or ""'Walter Sheltan'" [walter.sheltan@acme.com]" or ""'walter.sheltan@acme.com'" <walter.sheltan@acme.com>"
-    /^\"(.+?)\"\s?\n?\s*[\[|<](.+?)[\]|>]/, // ""Walter Sheltan" <walter.sheltan@acme.com>" or ""Walter Sheltan" [walter.sheltan@acme.com]" or ""walter.sheltan@acme.com" <walter.sheltan@acme.com>"
-    /^([^,;]+?)\s?\n?\s*[\[|<](.+?)[\]|>]/, // "Walter Sheltan <walter.sheltan@acme.com>" or "Walter Sheltan [walter.sheltan@acme.com]" or "walter.sheltan@acme.com <walter.sheltan@acme.com>"
+    regex()`^\s*<.${upTo("<mailto:")}<mailto:(.${upTo(">>")})>>`, // "<walter.sheltan@acme.com<mailto:walter.sheltan@acme.com>>"
+    regex()`^(.${lazyWords("[^\\s<]")})\s*<.${upTo("<mailto:")}<mailto:(.${upTo(">>")})>>`, // "Walter Sheltan <walter.sheltan@acme.com<mailto:walter.sheltan@acme.com>>"
+    regex()`^(.${lazyWords(`(?!${OPEN}mailto:)\\S`)})\s*${OPEN}mailto:(.${upTo(CLOSE)})${CLOSE}`, // "Walter Sheltan <mailto:walter.sheltan@acme.com>" or "Walter Sheltan [mailto:walter.sheltan@acme.com]" or "walter.sheltan@acme.com <mailto:walter.sheltan@acme.com>"
+    regex()`^'(${upTo(`'\\s*${OPEN}`, "+")})'\s*${OPEN}(.${upTo(CLOSE)})${CLOSE}`, // "'Walter Sheltan' <walter.sheltan@acme.com>" or "'Walter Sheltan' [walter.sheltan@acme.com]" or "'walter.sheltan@acme.com' <walter.sheltan@acme.com>"
+    regex()`^"'(${upTo(`'"\\s*${OPEN}`, "+")})'"\s*${OPEN}(.${upTo(CLOSE)})${CLOSE}`, // ""'Walter Sheltan'" <walter.sheltan@acme.com>" or ""'Walter Sheltan'" [walter.sheltan@acme.com]" or ""'walter.sheltan@acme.com'" <walter.sheltan@acme.com>"
+    regex()`^"(${upTo(`"\\s*${OPEN}`, "+")})"\s*${OPEN}(.${upTo(CLOSE)})${CLOSE}`, // ""Walter Sheltan" <walter.sheltan@acme.com>" or ""Walter Sheltan" [walter.sheltan@acme.com]" or ""walter.sheltan@acme.com" <walter.sheltan@acme.com>"
+    regex()`^([^,;]${lazyWords("[^,;\\s\\[|<]", "\\s")})\s*${OPEN}(.${upTo(CLOSE)})${CLOSE}`, // "Walter Sheltan <walter.sheltan@acme.com>" or "Walter Sheltan [walter.sheltan@acme.com]" or "walter.sheltan@acme.com <walter.sheltan@acme.com>"
     /^(.?)\s?\n?\s*[\[|<](.+?)[\]|>]/, // "<walter.sheltan@acme.com>"
     /^([^\s@]+@[^\s@]+\.[^\s@,]+)/, // "walter.sheltan@acme.com"
-    /^([^;].+?)\s?\n?\s*[\[|<](.+?)[\]|>]/ // "Walter, Sheltan <walter.sheltan@acme.com>" or "Walter, Sheltan [walter.sheltan@acme.com]"
+    regex()`^([^;].${lazyWords("[^\\s\\[|<]")})\s*${OPEN}(.${upTo(CLOSE)})${CLOSE}` // "Walter, Sheltan <walter.sheltan@acme.com>" or "Walter, Sheltan [walter.sheltan@acme.com]"
   ],
 
   mailbox_address: [
-    /^(([^\s@]+)@([^\s@]+)\.([^\s@]+))$/
+    /^(?=[^\s@]+@[^\s@]+$)(([^\s@]+)@([^\s@]+)\.([^\s@]+))$/
   ]
-  /* eslint-enable max-len */
 };
+/* eslint-enable max-len */
 
 /**************************************************************************
  * TYPES
@@ -632,7 +700,7 @@ class Parser {
           }
 
           built.push(
-            buildSafeRegExp(regex)
+            new RegExp(regex)
           );
         }
 
@@ -649,7 +717,7 @@ class Parser {
           regexesMap[keyLine] = this.buildLineRegex(single);
         }
 
-        regexesMap[key] = buildSafeRegExp(single);
+        regexesMap[key] = new RegExp(single);
       }
     }
   }
@@ -660,14 +728,7 @@ class Parser {
   private buildLineRegex(regex: RegExp) {
     // A 'line' regex will capture not only inner groups, but also the line \
     //   itself
-    // Important: `regex` must be a raw regular expression literal, not an RE2 \
-    //   instance. It seems that under some inexplicable circumstances, \
-    //   the RE2 instance sometimes doesn't have its `source` and `flags` \
-    //   properties correctly populated.
-    const source = `(${regex.source})`;
-    const flags  = regex.flags;
-
-    return buildSafeRegExp(source, flags);
+    return new RegExp(`(${regex.source})`, regex.flags);
   }
 
   /**
