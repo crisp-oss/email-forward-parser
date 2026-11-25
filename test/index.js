@@ -917,5 +917,42 @@ export default {
     });
 
     test.done();
+  },
+
+  // Test: Outlook 2019 (it) sender name holding double quotes
+  testOutlook2019ItalianQuotedName: function(test) {
+    const result = parser.read([
+      "Per te",
+      "",
+      "Il giorno 03/10/2026 10:00 \"Cooperativa \"Al Sole\"\" <bob@example.com> ha scritto:",
+      "",
+      "    Bring a chair."
+    ].join("\n"), "I: Garden party");
+
+    test.strictEqual(result.forwarded, true);
+    test.strictEqual(result.email.from.address, "bob@example.com");
+    test.strictEqual(result.email.from.name, "Cooperativa \"Al Sole\"");
+    test.strictEqual(result.email.date, "03/10/2026 10:00");
+    test.strictEqual(result.email.body, "Bring a chair.");
+
+    test.done();
+  },
+
+  // Test: Outlook 2019 (pl) sender name holding nested quotes
+  testOutlook2019PolishQuotedName: function(test) {
+    const result = parser.read([
+      "Dla ciebie",
+      "",
+      "Dnia 03/10/2026, 10:00 użytkownik „Spółdzielnia „Słońce”” <bob@example.com> napisał:",
+      "",
+      "    Bring a chair."
+    ].join("\n"), "PD: Garden party");
+
+    test.strictEqual(result.forwarded, true);
+    test.strictEqual(result.email.from.address, "bob@example.com");
+    test.strictEqual(result.email.from.name, "Spółdzielnia „Słońce”");
+    test.strictEqual(result.email.body, "Bring a chair.");
+
+    test.done();
   }
 }
